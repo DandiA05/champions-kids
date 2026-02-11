@@ -1,0 +1,61 @@
+// Font family
+$font-base: 	'Josefin Sans', sans-serif;
+$font-hedding:	'Josefin Sans', sans-serif;
+$font-body: 	'Josefin Sans', sans-serif;
+
+// Colors
+$body-color:		#8d8c8c;
+$primary:			#d41640;
+$secondary:			#ffffff;    // Hedding color
+$white:				#ffffff;
+$dark:          	#12111a;
+$gray-1: 			#35343c; 	// bg light	
+$gray-2: 			#f5f5f5;
+$black:  			#000000;
+$red:  				#ff0000;
+$yellow:  			#e5af13;
+$blue:  			#0751df;
+$green:  			#a2ec72;
+
+// SVG color
+$filter-1: invert(29%) sepia(100%) saturate(1887%) hue-rotate(211deg) brightness(102%) contrast(94%);
+
+// SVG color
+$filter-2: invert(17%) sepia(83%) saturate(3482%) hue-rotate(335deg) brightness(89%) contrast(99%);
+
+// SVG color
+$filter-3: invert(70%) sepia(62%) saturate(585%) hue-rotate(360deg) brightness(91%) contrast(101%);
+
+// SVG color
+$filter-4: invert(21%) sepia(83%) saturate(2292%) hue-rotate(212deg) brightness(101%) contrast(110%);
+
+
+
+
+
+// Border color
+$border-color: #ededed;
+$border-light: rgba($white, .3);
+$border-light-2: rgba($white, .1);	
+
+// For button and input border radius
+$border-radius: 6px;
+$border-radius-sm: 4px;
+$border-radius-md: 10px;
+$border-radius-lg: 50%;
+
+
+// box-shadow
+$box-shadow: 0px 1px 30px 0px rgba($secondary, .09);
+$box-shadow-sm:	0px 2px 5px 0px rgba($secondary, .10);
+$box-shadow-lg: 0 1rem 3rem rgba($secondary, .175);
+$box-shadow-inset: 0px 0px 15px 0px rgba($secondary, .10) inset;
+$box-shadow-top: 0 -4px 20px 0px rgba($secondary, .07);
+
+
+
+// SCSS Variable Convert CSS Variable
+:root {
+	--pgs_primary_color: #{$primary};
+	--pgs_primary_color_rgba: 212, 22, 64;
+}

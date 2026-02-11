@@ -1,0 +1,37 @@
+@import "../styles/scss/style.scss";
+@import "../public/css/select2/select2.css";
+
+:root {
+  --pgs_primary_color: #CD6500;
+  --pgs_primary_color_rgba: 10, 61, 111;
+  --pgs_secondary_color: #F5A623;
+  --pgs_secondary_color_rgba: 245, 166, 35;
+  --pgs_accent_color: #CD6500;
+}
+
+body {
+  background: #12111a !important;
+  font-family: 'Josefin Sans', sans-serif !important;
+  color: rgb(141, 140, 140) !important;
+
+}
+
+header {
+  background: #12111a !important;
+}
+
+.bg-primary-psg {
+  --bs-bg-opacity: 1;
+  background-color: var(--pgs_primary_color) !important;
+}
+
+.text-primary-psg {
+  --bs-text-opacity: 1;
+  color: var(--pgs_primary_color) !important;
+}
+
+
+header.header.header-sticky.is-sticky {
+ background: #CD6500 !important;
+
+}

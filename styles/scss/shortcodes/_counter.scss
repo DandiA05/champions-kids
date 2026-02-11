@@ -1,0 +1,74 @@
+/*****************************
+  Counter
+*****************************/
+
+.counter{
+  position: relative;
+  padding: 40px 30px;
+  z-index: 2;
+
+
+  .counter-number{
+    text-align: center;
+
+
+    .counter-text{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+
+      .timer{
+        transition: all 0.5s ease;
+      }
+
+      span{
+        font-size: 50px;
+        line-height: 1;
+        color: var(--pgs_primary_color);
+        font-weight: bold;
+      }
+    }
+
+    p{
+      font-size: 18px;
+      color: var(--pgs_primary_color);
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+  }
+
+  &:before{
+    content: "";
+    background-color: rgba($white,.1);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top:0;
+    transition: all 0.3s ease;
+    z-index: -1;
+  }
+
+  &:hover{
+
+    .counter-number{
+      .counter-text{
+        .timer{
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    &:before{
+      background-color: rgba(var(--pgs_primary_color_rgba),0.3);
+    }
+
+    p{
+      color: $white;
+    }
+  }
+}
+
+
+

@@ -1,0 +1,323 @@
+/*****************************
+  Countdown
+*****************************/
+.countdown-main {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .countdown {
+	    display: flex;
+		border: 1px solid $white;
+		padding: 20px;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		border-radius: 100%;
+
+		span {
+			color: $white;
+			font-size: 28px;
+		}
+
+		p {
+			margin-bottom: 0;
+			color: $white;
+		}
+	}
+}
+
+/*Game Countdown*/
+.game-countdown{
+
+	.countdown-main{
+		position: relative;
+
+		.countdown {
+			position: relative;
+		    display: flex;
+			border: none;
+			padding: 50px;
+			height: inherit;
+			width: inherit;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+			border-radius: inherit;
+			margin: 0px;
+
+			span {
+				color: $white;
+				font-size: 100px;
+				line-height: 100px;
+				font-weight: bold;
+
+				&:before{
+					position:absolute;
+					content: ":";
+					top: 35%;
+					transform: translateY(-50%);
+					right: -8px;
+					color: $white;
+					font-size: 100px;
+					font-weight: bold;
+				}
+			}
+
+			p {
+				margin-bottom: 0;
+				color: $white;
+				font-size: 40px;
+				line-height: 40px;
+				font-weight: bold;
+				text-transform: uppercase;
+			}
+
+			&:last-child{
+
+				&:before{
+					display:none;
+				}
+
+				span{
+
+					&:before{
+						display:none;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+/*Coming Soon*/
+.coming-soon-section{
+
+	.countdown-main{
+		
+		margin: 50px 0px;
+
+		.countdown{
+			margin:0px 20px;
+			border: none;
+			border-radius: 0;
+
+			span{
+				font-size: 80px;
+				color: $white;
+			}
+
+			p{
+				font-size: 20px;
+				color: var(--pgs_primary_color);
+			}
+		}
+	}
+
+	.coming-soon-form{
+		position: relative;
+		padding-right: 175px;
+
+		.btn{
+			position: absolute;
+			right: 0;
+			top: 0;
+			padding: 20px 40px 16px;
+		}
+	}
+}
+
+
+@media (min-width:1500px) {
+
+	.countdown-main {
+	    
+	    .countdown {
+			height: 100px;
+			width: 100px;
+			margin: 5px;
+		}
+	}
+}
+
+@media (max-width:1499px) {
+
+	.countdown-main {
+	    
+	    .countdown {
+			height: 80px;
+			width: 80px;
+			margin: 5px;
+
+			span {
+				font-size: 22px;
+				line-height: 23px;
+			}
+		}
+	}
+}
+
+@media (max-width:1299px) {
+
+	.countdown-main {
+	    
+	    .countdown {
+			height: 110px;
+			width: 110px;
+			margin: 10px;
+
+			span {
+				font-size: 28px;
+				line-height: 30px;
+			}
+		}
+	}
+}
+
+@media (max-width:1199px) {
+
+	.game-countdown{
+
+		.countdown-main{
+
+			.countdown{
+				padding: 30px;
+
+				span {
+				    font-size: 60px;
+				    line-height: 60px;
+				    &:before{
+				    	font-size: 60px;
+				    }
+				}
+
+				p {
+				    font-size: 30px;
+				    line-height: 30px;
+				}
+			}
+		}
+	}
+}
+
+
+@media (max-width:991px) {
+
+	.game-countdown{
+
+		.countdown-main{
+
+			.countdown{
+				padding: 20px;
+
+				span {
+				    font-size: 48px;
+				    line-height: 48px;
+
+				    &:before{
+				    	font-size: 48px;
+				    }
+				}
+
+				p {
+				    font-size: 24px;
+				    line-height: 24px;
+				}
+			}
+		}
+	}
+}
+  
+
+@media (max-width:767px) {
+
+	.countdown-main {
+
+		.countdown {
+			height: 90px;
+			width: 90px;
+			margin: 5px;
+			
+			span {
+				font-size: 22px;
+			}
+		}
+	}
+
+	.game-countdown{
+
+		.countdown-main{
+
+			.countdown{
+				padding: 15px;
+
+				span {
+				    font-size: 30px;
+				    line-height: 30px;
+				    &:before{
+				    	font-size: 30px;
+				    }
+				}
+
+				p {
+				    font-size: 18px;
+				    line-height: 18px;
+				}
+			}
+		}
+	}
+
+	/*Coming Soon*/
+	.coming-soon-section{
+
+		h1{
+			font-size: 50px;
+		}
+
+		.countdown-main{
+			margin-top: 30px 0px;
+
+			.countdown{
+				margin:0px 10px;
+
+				span{
+					font-size: 42px;
+					line-height: 50px;
+				}
+
+				p{
+					font-size: 18px;
+				}
+			}
+		}
+
+		.coming-soon-form{
+			padding-right: 115px;
+
+			.btn{
+				padding: 20px 20px 19px;
+			}
+		}
+	}
+}
+
+@media (max-width:575px) {
+
+	.game-countdown{
+
+		.countdown-main{
+
+			.countdown{
+				width: 50%;
+
+				span {
+				    
+				    &:before{
+				    	content:inherit;
+				    }
+				}
+			}
+		}
+	}
+}

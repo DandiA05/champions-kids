@@ -1,0 +1,92 @@
+/*****************************
+  Event
+*****************************/
+
+.events-box{
+  position: relative;
+
+  .events-img{
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.28s ease;
+
+    &:before {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 85%;
+      display: block;
+      z-index: 1;
+      content: "";
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(15, 15, 15, 0.9) 100%);
+      transition: opacity 0.65s cubic-bezier(0.05, 0.2, 0.1, 1);
+      cursor: pointer;
+    }
+  }
+
+  .events-details{
+    position: absolute;
+    padding: 20px;
+    padding-top: 30px;
+    width: 90%;
+    bottom: 20px;
+    z-index: 2;
+    background-color: rgba($dark,.9);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+
+    .events-date{
+      position: absolute;
+      top:-60px;
+      background-color: var(--pgs_primary_color);
+      width: 90px;
+      height: 70px;
+      color: $white;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+
+      span{
+        display: block;
+        font-size: 26px;
+        font-weight: 700;
+        margin-top: 4px;
+      }
+    }
+
+    .events-title{
+      margin-bottom: 15px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      -webkit-line-clamp: 2;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+    }
+
+    .events-meta{
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--pgs_primary_color);
+
+      .events-time{
+
+        .time{
+          color: $white;
+          padding-left: 8px;
+        }
+      }
+
+      .events-location{
+
+        .location{
+          color: $white;
+          padding-left: 8px;
+        }
+      }
+    }
+  }
+}

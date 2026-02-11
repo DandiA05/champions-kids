@@ -1,0 +1,551 @@
+/*****************************
+    Team
+*****************************/
+.classic-players {
+  position: relative;
+
+  .owl-carousel {
+    position: inherit;
+
+    .item {
+      overflow: hidden;
+
+      .player{
+
+        position: relative;
+        transition: all 0.3s ease-in-out;
+
+        img{
+          transition: all 0.3s ease;
+        }
+
+        &:before{
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          height: 0;
+          width: 100%;
+          background-color: rgba($dark,0.6);
+          z-index: 2;
+        }
+      }
+  			
+			.player-info {
+				position: absolute;
+				bottom: -150px;
+				padding: 15px 30px 15px 30px;
+        transition: all 0.5s ease-in-out;
+        width: 100%;
+        display: flex;
+        z-index: 3;
+
+        .player-number{
+          flex: 0 0 55px;
+          width: 55px;
+          display: flex;
+          align-items: center;
+          background-color: var(--pgs_primary_color);
+          margin-right: 15px;
+          justify-content: center;
+          font-size: 30px;
+          color: $white;
+        }
+
+        .player-name{
+
+          .title{
+            font-size: 24px;
+          }
+        }
+			}
+
+      &:hover {
+
+        .player{
+
+          img{
+            transform: scale(1.15);
+          }
+
+          &:before{
+            height:100%;
+          }
+        }
+
+        .player-info {
+          bottom: 15px;
+        }
+      }
+	  }
+
+    .owl-nav {
+      left: 0px;
+      position: absolute;
+      bottom: 100px;
+
+      button {
+        height: 70px;
+        width: 70px;
+        font-size: 26px;
+
+        &.owl-next {
+          left: 90px;
+        }
+      }
+    }
+  }
+
+  &:before {
+    background-image: url(/images/home-01/pattern-08.png);
+    content: "";
+    position: absolute;
+    position: absolute;
+    height: 321px;
+    width: 172px;
+    left: 0;
+    bottom: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+.team{
+  position: relative;
+  overflow: hidden;
+
+  .player{
+    position: relative;
+    transition: all 0.3s ease-in-out;
+
+    img{
+      transition: all 0.3s ease;
+    }
+
+    &:before{
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 0;
+      width: 100%;
+      background-color: rgba($dark,0.6);
+      z-index: 2;
+    }
+  }
+
+  .player-info {
+    position: absolute;
+    bottom: -150px;
+    padding: 15px 30px 15px 30px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    display: flex;
+    z-index: 3;
+
+    .player-number{
+      flex: 0 0 55px;
+      width: 55px;
+      display: flex;
+      align-items: center;
+      background-color: var(--pgs_primary_color);
+      margin-right: 15px;
+      justify-content: center;
+      font-size: 30px;
+      color: $white;
+    }
+
+    .player-name{
+
+      .title{
+        font-size: 24px;
+      }
+    }
+  }
+
+  &:hover {
+
+    .player{
+
+      img{
+        transform: scale(1.1);
+      }
+
+      &:before{
+        height:100%;
+      }
+    }
+
+    .player-info {
+      bottom: 15px;
+    }
+  }
+}
+
+
+/*Team Single*/
+
+.player-single {
+  
+  .player-info {
+    padding: 25px 30px;
+    align-self: center;
+    margin: 0 20px;
+    z-index: 2;
+    position: relative;
+
+    .player-position{
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--pgs_primary_color);
+    }
+
+    ul {
+      li {
+        color: $white;
+        span{
+          font-size: 18px;
+          font-weight: 600;
+          width: 140px;
+        }
+      }
+    }
+  }
+}
+
+
+/*Team Info*/
+
+.team-info{
+
+  .team{
+
+    .player-info{
+      width: 90%;
+      left: 5%;
+      bottom: 20px;
+      background-color: $white;
+      padding: 15px;
+      padding-left: 55px;
+
+      .player-num{
+        font-size: 18px;
+        font-weight: 600;
+        color: $white;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 100%;
+        background-color: var(--pgs_primary_color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .player-name{
+        font-size: 20px;
+        color: var(--pgs_primary_color);
+      }
+
+      span{
+        color: $dark;
+      }
+    }
+  }
+}
+
+.player-info {
+
+  .player-position {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--pgs_primary_color);
+  }
+
+  ul {
+
+    li {
+      color: $white;
+
+      span {
+        font-size: 18px;
+        font-weight: 600;
+        width: 140px;
+      }
+    }
+  }
+}
+
+.team-sticky.is-sticky {
+  top: 100px;
+}
+
+/*Players Details*/
+.players-details {
+  position: relative;
+  z-index: 2;
+
+  .text-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    height: 100%;
+    overflow: hidden;
+    width: 310px;
+
+    .baseball-text {
+      position: absolute;
+      font-size: 210px;
+      line-height: 190px;
+      font-weight: bold;
+      text-align: right;
+      color: rgba($dark,0.4);
+      text-transform: uppercase;
+      left: -290px;
+      top: -310px;
+      transform: rotate(-90deg);
+    }
+
+    .baseball-text.text-01 {
+      left: -210px;
+      top: 160px;
+    }
+
+    .baseball-text.text-02 {
+      left: -294px;
+      top: 260px;
+    }
+  }
+
+  .player-2{
+    position: absolute;
+    bottom: 0;
+    left: -120px;
+    z-index: -1;
+  }
+
+  .player-detail{
+
+    .player-name{
+      font-size: 72px;
+      font-weight: bold;
+      line-height: 70px;
+      color: $white;
+      margin-bottom: 25px;
+      display: block;
+    }
+
+    .player-profile{
+      display: flex;
+      align-items: center;
+
+      .profile{
+
+        span{
+          display: block;
+          color: $white;
+          font-size: 18px;
+          margin-bottom: 15px;
+
+          label{
+            padding-right: 20px;
+            margin-right: 20px;
+            position: relative;
+            width: 110px;
+
+            &:before{
+              position:absolute;
+              content: "";
+              top: 50%;
+              right: 0;
+              height: 2px;
+              width: 4px;
+              background-color: $white;
+            }
+          }
+        }
+      }
+
+      .rank{
+        font-size: 142px;
+        font-weight: bold;
+        color:rgba(var(--pgs_primary_color_rgba),0.1);
+        padding-left: 80px;
+      }
+    }
+  }
+
+  .base-ball{
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: -1;
+  }
+
+  .player-career-detail-table{
+    padding-bottom: 80px;
+  }
+}
+
+
+
+.single-player{
+  position: relative;
+
+  &::before {
+    background-image: url(/images/home-01/pattern-05.png);
+    content: "";
+    position: absolute;
+    height: 105px;
+    width: 120px;
+    right: 300px;
+    bottom: 130px;
+    background-repeat: no-repeat;
+    backface-visibility: hidden;
+    animation: jumping 9s ease-in-out 2s infinite alternate;
+    animation-delay: 1s;
+    transition: all .9s ease 5s;
+    user-select: none;
+  }
+
+  .single-player-bg {
+    position: absolute;
+    right: 0;
+    top: 50px;
+  }
+}
+
+@media (max-width: 1499px) {
+
+  .classic-players {
+
+    &:before {
+      width: 100px;
+      height: 190px;
+    }
+  }
+} 
+
+@media (max-width:991px) {
+
+  .classic-players {
+
+    .owl-carousel {
+
+      .owl-nav {
+        display: none;
+      }
+    }
+  }
+
+  .players-details {
+
+    .player-2 {
+      position: inherit;
+      bottom: 0;
+      left: inherit;
+      z-index: -1;
+      margin-bottom: 50px;
+    }
+
+    .base-ball{
+      display: none;
+    }
+
+    .player-career-detail-table{
+      padding-bottom: 50px;
+    }
+  }
+}
+
+@media (max-width:767px) {
+
+  .team-single {
+
+    .team-info {
+      margin: 0 15px;
+      margin-top: -50px;
+    }
+  }
+
+
+  .players-details {
+
+    .text-area{
+      display: none;
+    }
+
+    .player-detail{
+
+      .player-name {
+
+        font-size: 40px;
+        line-height: 40px;
+      }
+
+      .player-profile{
+
+        .rank {
+          font-size: 80px;
+          padding-left: 50px;
+        }
+      }
+    }
+
+    .player-career-detail-table{
+      padding-bottom: 20px;
+    }
+  }  
+
+  .single-player{
+
+    &:before{
+      right:0;
+    }
+  }
+}
+
+@media (max-width:575px) {
+  
+  .players-details {
+
+    .player-2{
+      max-width: 100%;
+    }
+
+    .player-detail{
+
+      .player-name {
+
+        font-size: 40px;
+        line-height: 40px;
+      }
+
+      .player-profile{
+        display: block;
+
+        .rank {
+          padding-left: 0px;
+          margin-top: 20px;
+        }
+      }
+    }
+  } 
+}
+
+
+@media (max-width:479px) {
+
+  .players-details {
+
+    .player-detail {
+      
+      .player-name {
+        font-size: 24px;
+        line-height: 24px;
+      }
+    }
+  }
+}

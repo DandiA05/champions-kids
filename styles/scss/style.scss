@@ -1,0 +1,138 @@
+/*
+Template: PGSports - Sports HTML Template
+Version: 2.0.0
+Author: potenzaglobalsolutions
+Design and Developed by: potenzaglobalsolutions.com
+
+NOTE: This is main stylesheet of template, This file contains the styling for the actual Template.
+*/
+
+/*==============================================
+[  Table of contents  ]
+================================================
+
+ :: Helper Classes
+ :: Typography
+ :: Shortcodes
+    - Accordion
+    - Button
+    - Countdown
+    - Counter
+    - Event
+    - Feature Info
+    - Owl-carousel
+		- Portfolio
+		- Product
+    - Search
+    - Select
+    - Sidebar
+    - Tab
+    - Table
+    - Team
+    - Testimonial
+ :: Header
+   - Header Default
+   - Header Style 02
+   - Header Style 03
+ :: Banner
+   - Banner
+   - Banner 01
+   - Banner 02
+   - Banner 03
+ :: Layout
+   - Back To Top
+   - Social Icon
+   - Live Videos
+     - Video Style 02
+     - Video Style 03
+   - Latest Results
+   - Upcoming Match
+   - Performers
+   - Clients
+   - Inner Page
+   - Progress Bar
+   - Newsletter
+   - Pagination
+   - Coming Soon
+   - 404
+   - Ticket
+   - Match Schedule Table
+   - Keyframes
+
+ :: Blog
+   - Blog Style 01
+   - Blog Style 02
+   - Featured News
+   - Blog
+   - Blog Detail
+
+ :: Shop
+   - Product
+   - Product Detail
+    - Commentlist
+    - Checkout
+    - Cart
+    - Shop Category
+    - Shop Sidebar
+    
+ :: Footer
+   - Footer
+   - Footer Style 02
+   - Footer Style 03
+
+ :: Theme-yellow
+ :: Theme-blue
+
+======================================
+[ End table content ]
+======================================*/
+
+// Core files
+@import "variables";
+@import "helpers";
+@import "typography";
+
+// Shortcodes
+@import "shortcodes/accordion";
+@import "shortcodes/button";
+@import "shortcodes/countdown";
+@import "shortcodes/counter";
+@import "shortcodes/event";
+@import "shortcodes/feature-info";
+@import "shortcodes/owl-carousel";
+@import "shortcodes/portfolio";
+@import "shortcodes/product";
+@import "shortcodes/search";
+@import "shortcodes/select";
+@import "shortcodes/sidebar";
+@import "shortcodes/tab";
+@import "shortcodes/table";
+@import "shortcodes/team";
+@import "shortcodes/testimonial";
+
+// Structure
+@import "player";
+@import "header";
+@import "banner";
+@import "layout";
+@import "theme-yellow";
+@import "theme-blue";
+@import "theme-green";
+// Pages
+@import "blog"; 
+@import "shop";
+@import "footer";
+
+
+
+.bg-primary-pgs {
+  background-color: var(--pgs_primary_color) !important;
+}
+
+.text-primary-pgs {
+  color: var(--pgs_primary_color) !important;
+}
+
+.text-secondary-pgs {
+  color: var(--pgs_secondary_color) !important;
+}

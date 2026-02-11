@@ -1,0 +1,400 @@
+/*****************************
+    Points Table
+*****************************/
+
+.table{
+
+	thead{
+
+		tr{
+
+			th{
+				background-color: var(--pgs_primary_color);
+				padding:16px 20px 9px;
+				font-size: 20px;
+				font-weight: bold;
+				color: $white;
+				border-bottom: 1px solid var(--pgs_primary_color);	
+			}
+		}
+	}
+
+	tbody{
+
+		tr{
+
+			th,
+			td{
+				padding:16px 20px 12px;
+				font-size: 18px;
+				color: $white;
+				border-bottom: 1px solid rgba($white,0.2);
+			}
+
+			&:last-child{
+
+				th,
+				td{
+					border-bottom: 0px;
+				}
+			}
+		}
+	}
+}
+
+.team-name{
+	display: flex;
+	align-items: center;
+
+	img{
+		flex: 0 0 25px;
+		width: 25px;
+		margin-right: 8px;
+	}
+}
+
+.match-points-table {
+	background-image: url(/images/home-01/bg-02.jpg);
+    background-repeat: no-repeat;
+
+	.table {
+
+		thead{
+
+			tr{
+
+				th{
+					background-color: var(--pgs_primary_color);
+					border-color: var(--pgs_primary_color);
+
+					&:first-child{
+						width:60px;
+					}
+				}
+			}
+		}
+
+		tbody {
+			background: rgba($dark, 0.9);
+
+			tr{
+
+				th{
+					width:60px;
+				}
+			}
+		}
+	}
+}
+
+
+/*Points Table Style 02*/
+.section-title-table {
+	text-align: center;
+	padding: 15px;
+}
+
+.points-table-style-02 {
+	background-color:rgba($gray-1,0.3);
+
+	.table {
+
+		thead {
+
+			tr {
+
+				th {
+					background: inherit;
+					border-color: rgba($white,0.1);
+				}
+			}
+		}
+
+		tbody {
+
+			tr {
+				th,
+				td {
+					
+					border-color: rgba($white,0.1);
+				}
+			}
+		}
+	}
+}
+
+.fixtures-table {
+	background-color:rgba($gray-1,0.3);
+
+	.fixtures-match {
+		border-bottom: 1px solid rgba($white,0.1);
+		padding: 30px 0;
+
+		.fixtures-team{
+			img{
+				transition: all 0.5s ease;
+				transform: scale(1);
+			}
+		}
+
+		&:last-child {
+			border: none;
+		}
+
+		&:hover{
+			.fixtures-team{
+				img{
+					transform: scale(1.05);
+				}
+			}
+		}
+	}
+}
+
+
+.player-details{
+
+	.table{
+		background-color: rgba($gray-1, 0.3);
+
+		thead{
+
+			tr{
+
+				th{
+					background-color: var(--pgs_primary_color);
+					padding:11px 15px 4px;
+					font-size: 20px;
+					font-weight: bold;
+					color: $white;
+					border-bottom: 1px solid var(--pgs_primary_color);
+				}
+			}
+		}
+
+		tbody{
+
+			tr{
+
+				th,
+				td{
+					padding:16px 20px 12px;
+					font-size: 18px;
+					color: $white;
+					border-bottom: 1px solid rgba($white,0.1);
+				}
+
+				&:last-child{
+
+					th,
+					td{
+						border-bottom: 0px;
+					}
+				}
+			}
+		}
+	}
+}
+
+.points-table-02{
+
+	&:before{
+		background-image: url(/images/home-02/pattern-01.png);
+	    content: "";
+	    position: absolute;
+	    height: 92px;
+	    width: 92px;
+	    left: 100px;
+	    top: 230px;
+	    z-index: -1;
+	    background-repeat: no-repeat;
+	}
+
+	&:after{
+		background-image: url(/images/home-02/pattern-03.png);
+	    content: "";
+	    position: absolute;
+	    height: 405px;
+	    width: 197px;
+	    right: 30px;
+	    top: 200px;
+	    z-index: -1;
+	    background-repeat: no-repeat;
+	    -webkit-animation: mover 2s infinite  alternate;
+  		animation: mover 2s infinite  alternate;
+	}
+
+	.pattern-2{
+		position: absolute;
+		left: -180px;
+		bottom: 80px;
+		z-index: -1;
+		-webkit-animation: upmover 1.5s infinite  alternate;
+  		animation: upmover 1.5s infinite  alternate;
+	}	
+}
+
+/*Match Schedule Table*/
+
+.match-schedule-table{
+
+	.table{
+		background-color: rgba($white,.08);
+
+		thead{
+
+			tr{
+
+				th{
+					background-color: var(--pgs_primary_color);
+					border-bottom: 1px solid var(--pgs_primary_color);
+				}
+			}
+		}
+
+		tbody{
+
+			tr{
+
+				td{
+					vertical-align: middle;
+				}
+			}
+		}  
+
+		.upcoming-match{
+			justify-content: flex-start;
+
+			h2{
+				font-size: 18px;
+			}
+
+			.match-team{
+
+				img{
+					height: 40px;
+				}
+			}
+		}
+	}
+}
+
+/*Player Career Detail Table*/
+
+.player-career-detail-table{
+	padding-top: 15px;
+	border-top: 1px solid rgba($white,0.2);
+
+	.table{
+
+		thead{
+
+			tr{
+
+				th{
+					background-color: var(--pgs_primary_color);
+					padding:10px 10px 4px;
+					font-size: 18px;
+					font-weight:normal;
+					color: $white;
+					border-bottom: none;
+				}
+			}
+		}
+
+		tbody{
+
+			tr{
+
+				th,
+				td{
+					padding:10px 12px 12px;
+					font-size: 16px;
+					color: $white;
+					border-bottom: none;
+				}
+
+				&:last-child{
+
+					th,
+					td{
+						border-bottom: 0px;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+@media (max-width:767px) {
+
+	.points-table-02{
+
+		&:before{
+			background-size:cover;
+			height: 50px;
+		    width: 50px;
+		    left: 30px;
+		    top: 130px;
+		}
+
+		&:after{
+			background-size: cover;
+		    height: 145px;
+		    width: 70px;
+		    right: 30px;
+		}
+
+		.pattern-2 {
+		    max-width: 35%;
+		}
+	}
+}
+
+@media (max-width:575px) {
+
+	.points-table-02{
+
+		&:before,
+		&:after{
+			content:none;
+		}
+
+		.pattern-2 {
+			display: none;
+		}
+	}
+	
+}
+
+@media (max-width:479px) {
+
+	.fixtures-table{
+
+		.fixtures-match{
+			
+			text-align: center;
+			> div{
+				flex-wrap: wrap;
+				flex-direction: column;
+
+				.team-point{
+					margin: 15px 0px;
+					justify-content: center;
+
+					h6 {
+						font-size: 18px;
+					}
+				}
+			}
+
+			.fixtures-team {
+				justify-content: center;
+				h6 {
+					font-size: 18px;
+				}
+			}
+		}
+	}
+}

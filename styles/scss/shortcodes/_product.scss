@@ -1,0 +1,66 @@
+/*****************************
+    Products
+*****************************/
+
+.product{
+
+	.product-thumbnail{
+		position: relative;
+		overflow: hidden;
+
+		img{
+			transition: all 0.5s ease;
+			transform: scale(1);
+		}
+
+		.product-action{
+			position: absolute;
+			bottom: -60px;
+			left: 0;
+			right: 0;
+			text-align: center;
+			transition: all 0.5s ease-in-out;
+		}
+	}
+
+	.product-info{
+		text-align: center;
+		padding-top: 30px;
+
+		.product-name{
+			margin-bottom: 10px;
+
+			a{
+				color: $white;
+
+				&:hover{
+					color:var(--pgs_primary_color);
+				}
+			}
+		}
+
+		.price{
+			font-size: 18px;
+			font-weight: 500;
+
+			ins{
+				text-decoration: none;
+				color: var(--pgs_primary_color);
+			}
+		}
+	}
+
+	&:hover{
+
+		.product-thumbnail{
+			img{
+				transform: scale(1.05);
+			}
+			
+			.product-action{
+				position: absolute;
+				bottom: 10px;
+			}
+		}
+	}
+}

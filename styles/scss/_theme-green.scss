@@ -1,0 +1,18 @@
+/*****************************
+    Theme Green
+*****************************/
+
+.theme-green{
+  --pgs_primary_color: #a2ec72;
+  --pgs_primary_color_rgba: 162,236,114;
+
+
+  .btn.btn-primary{
+  	color: $dark !important;
+  }
+  .btn.btn-white{
+  	&:hover{
+  		color: $dark !important;
+  	}
+  }
+}
