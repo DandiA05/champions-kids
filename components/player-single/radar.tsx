@@ -34,7 +34,7 @@ export const radarOptions = {
         color: "#fff",
         font: {
           size: 13,
-          weight: "600",
+          weight: 600,
         },
       },
     },
