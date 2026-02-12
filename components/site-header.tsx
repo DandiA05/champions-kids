@@ -27,15 +27,17 @@ export function SiteHeader({ isHomePage = false }: SiteHeaderProps) {
                 width={180}
                 height={60}
                 className="logo img-fluid"
-                src="/images/logo-blue.svg"
+                src="/images/logo-champions-kids.png"
                 alt="logo"
                 style={{
                   objectFit: "contain",
                 }}
               />
               <img
+                width={180}
+                height={60}
                 className="sticky-logo img-fluid"
-                src="/images/logo-blue-dark.svg"
+                src="/images/logo-champions-kids.png"
                 alt="logo"
               />
             </Link>

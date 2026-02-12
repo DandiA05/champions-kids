@@ -4,7 +4,7 @@ export default function Team() {
   return (
     <main>
       {/* Banner */}
-      <section
+      {/* <section
         className="inner-banner bg-overlay-black-6 bg-holder"
         style={{ backgroundImage: "url(/images/inner-banner/01.jpg)" }}
       >
@@ -23,7 +23,7 @@ export default function Team() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Our Player */}
       <section className="space-ptb">

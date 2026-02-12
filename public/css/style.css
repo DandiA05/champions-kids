@@ -3413,7 +3413,7 @@ input[type=radio]:radio {
   padding: 15px 40px;
 }
 .header .navbar .navbar-brand img {
-  height: 30px;
+  height: 60px !important;
 }
 .header .navbar .navbar-brand .logo-blue,
 .header .navbar .navbar-brand .logo-yellow {
@@ -4049,7 +4049,7 @@ header.header.header-sticky.is-sticky .navbar .add-listing .side-menu .menu-dark
     border-top-right-radius: 0;
   }
   .header .navbar .navbar-brand .logo {
-    height: 30px;
+    height:40px;
   }
   .header .navbar .navbar-nav {
     align-items: initial;
@@ -5180,6 +5180,7 @@ header.header.header-sticky.is-sticky .navbar .add-listing .side-menu .menu-dark
   background-image: url(a9df94be601cb36c06ac.jpg);
   padding-bottom: 280px;
   background-repeat: no-repeat;
+  
 }
 
 .time-location {

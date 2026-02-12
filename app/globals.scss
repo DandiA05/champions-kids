@@ -2,7 +2,7 @@
 @import "../public/css/select2/select2.css";
 
 :root {
-  --pgs_primary_color: #CD6500;
+  --pgs_primary_color: white;
   --pgs_primary_color_rgba: 10, 61, 111;
   --pgs_secondary_color: #F5A623;
   --pgs_secondary_color_rgba: 245, 166, 35;
@@ -10,14 +10,14 @@
 }
 
 body {
-  background: #12111a !important;
+  background: #0B3C5D !important;
   font-family: 'Josefin Sans', sans-serif !important;
-  color: rgb(141, 140, 140) !important;
+  color: white !important;
 
 }
 
 header {
-  background: #12111a !important;
+  background: #0B3C5D !important;
 }
 
 .bg-primary-psg {
@@ -32,6 +32,73 @@ header {
 
 
 header.header.header-sticky.is-sticky {
- background: #CD6500 !important;
+ background: #0B3C5D !important;
 
+}
+
+.header .navbar .navbar-brand img {
+ height: 80px;
+ width: 240px;
+}
+
+@media (max-width: 1199px) {
+    .header .navbar .navbar-brand .logo {
+        height: 60px;
+        width: 180px;
+    }
+}
+
+header.header.header-sticky.is-sticky .navbar .navbar-brand img {
+    height: 60px;
+}
+
+header.header.header-sticky.is-sticky .navbar .navbar-brand {
+    /* border-right: 1px solid #ffffff4d; */
+    border: none !important;
+}
+
+header.header.header-sticky.is-sticky .navbar .navbar-nav .nav-item .nav-link {
+    color: white !important;
+}
+
+.latest-results {
+  padding-bottom: 280px;
+  background-image: 
+    linear-gradient(
+      rgba(11, 60, 93, 0.88),
+      rgba(15, 48, 75, 0.88)
+    ),
+    url(/images/home-01/blog/03.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+
+// .inner-banner {
+//   background-image:
+//     linear-gradient(
+//       135deg,
+//       rgba(205, 101, 0, 0.95),
+//       rgba(170, 80, 0, 0.95)
+//     ),
+//     url(/images/inner-banner/01.jpg) !important;
+
+//   background-repeat: no-repeat !important;
+//   background-size: cover !important;
+// }
+
+
+
+
+
+.match-schedule .bg-light {
+    background: #000000 !important;
+}
+
+.blog-post.post-style-01 .blog-image .blog-post-date {
+    background-color: #0B3C5D !important;
+}
+
+.classic-players .owl-carousel .item .player-info .player-number {
+    background-color: #0B3C5D !important;
 }

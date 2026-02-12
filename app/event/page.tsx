@@ -67,7 +67,7 @@ export default function EventList() {
   return (
     <main>
       {/* Banner */}
-      <section
+      {/* <section
         className="inner-banner bg-overlay-black-6 bg-holder"
         style={{ backgroundImage: "url('/images/inner-banner/01.jpg')" }}
       >
@@ -86,7 +86,7 @@ export default function EventList() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Blog List Section */}
       <section className="space-ptb">
