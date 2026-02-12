@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PGSports - Sports Next.js Migration",
-  description: "Migrated from HTML Template",
+  title: "Champions Kids",
+  description: "Champions Kids",
 };
 
 export default function RootLayout({

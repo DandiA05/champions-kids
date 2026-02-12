@@ -37,7 +37,7 @@ header.header.header-sticky.is-sticky {
 }
 
 .header .navbar .navbar-brand img {
- height: 80px;
+ height: 60px;
  width: 240px;
 }
 
@@ -101,4 +101,16 @@ header.header.header-sticky.is-sticky .navbar .navbar-nav .nav-item .nav-link {
 
 .classic-players .owl-carousel .item .player-info .player-number {
     background-color: #0B3C5D !important;
+}
+
+.team .player-info .player-number {
+    background-color: #0B3C5D !important;
+}
+
+header.header.header-sticky.default.inner-page-header {
+  box-shadow: 0 1px 30px #ffffff17 !important;
+}
+
+.blog-post.post-style-02 .blog-image .blog-post-date {
+  background-color: #0B3C5D !important;
 }

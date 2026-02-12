@@ -1,3 +1,4 @@
+import LogoSlide from "@/components/logo-slide";
 import Link from "next/link";
 
 export default function Team() {
@@ -24,6 +25,8 @@ export default function Team() {
           </div>
         </div>
       </section> */}
+
+      <section className="space-pt"></section>
 
       {/* Our Player */}
       <section className="space-ptb">
@@ -327,6 +330,7 @@ export default function Team() {
           </div>
         </div>
       </section>
+      <LogoSlide />
     </main>
   );
 }

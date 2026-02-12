@@ -112,7 +112,7 @@ export function SiteFooter() {
                 {" "}
                 &copy; Copyright{" "}
                 <span id="copyright"> {new Date().getFullYear()}</span>{" "}
-                <a href="/"> PGSports </a> All Rights Reserved
+                <a href="/"> Champions Kids </a> All Rights Reserved
               </p>
             </div>
           </div>

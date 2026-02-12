@@ -21,11 +21,11 @@ export function LayoutContent({ children }: { children: React.ReactNode }) {
       <ConditionalHeader />
       {children}
       <SiteFooter />
-      <div id="back-to-top" className="back-to-top">
+      {/* <div id="back-to-top" className="back-to-top">
         <a href="#">
           <i className="fa-solid fa-arrow-up"></i>
         </a>
-      </div>
+      </div> */}
     </>
   );
 }

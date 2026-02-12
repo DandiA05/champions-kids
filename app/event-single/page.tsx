@@ -13,7 +13,7 @@ export default function EventSingle() {
   return (
     <main>
       {/* Banner - Full Width */}
-      <section
+      {/* <section
         className="inner-banner bg-overlay-black-6 bg-holder"
         style={{
           backgroundImage: "url('/images/inner-banner/01.jpg')",
@@ -40,7 +40,9 @@ export default function EventSingle() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      <section className="space-pt"></section>
 
       {/* Blog Detail - Full Width */}
       <section className="space-ptb">
@@ -124,7 +126,7 @@ export default function EventSingle() {
           <div className="row">
             <div className="col-12">
               <div className="section-title">
-                <h2>Documentasi Kegiatan</h2>
+                <h2>Event Documentation</h2>
               </div>
             </div>
           </div>

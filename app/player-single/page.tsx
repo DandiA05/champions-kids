@@ -5,12 +5,13 @@ import { radarData, radarOptions } from "@/components/player-single/radar";
 import Link from "next/link";
 import { Radar } from "react-chartjs-2";
 import PlayerStatBar from "@/components/player-single/PlayerStatBar";
+import LogoSlide from "@/components/logo-slide";
 
 export default function PlayerSingle() {
   return (
     <main>
       {/* Banner */}
-      <section
+      {/* <section
         className="inner-banner bg-overlay-black-6 bg-holder"
         style={{ backgroundImage: "url(/images/inner-banner/01.jpg)" }}
       >
@@ -29,7 +30,9 @@ export default function PlayerSingle() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
+      <section className="space-pt"></section>
 
       {/* Player Detail */}
       <section className="space-ptb single-player">
@@ -173,6 +176,7 @@ export default function PlayerSingle() {
           </div>
         </div>
       </section>
+      <LogoSlide />
     </main>
   );
 }

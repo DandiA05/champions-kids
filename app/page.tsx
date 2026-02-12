@@ -1,3 +1,4 @@
+import LogoSlide from "@/components/logo-slide";
 import Link from "next/link";
 
 export default function Home() {
@@ -79,7 +80,7 @@ export default function Home() {
                       aliquat enim ad.
                     </p>
                     <a
-                      href="about-us.html"
+                      href="/about-us"
                       className="btn btn-white mt-3 mt-md-4"
                       data-swiper-animation="fadeInUp"
                       data-duration="1.5s"
@@ -750,6 +751,8 @@ export default function Home() {
           </div>
         </div>
       </div> */}
+
+      <LogoSlide />
     </main>
   );
 }
