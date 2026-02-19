@@ -45,7 +45,7 @@ export function SiteFooter() {
                 </li>
               </ul>
             </div>
-            <div className="col-lg-4 col-md-6 text-lg-center mb-4 mb-lg-0">
+            <div className="col-lg-8 col-md-6 text-lg-center mb-4 mb-lg-0">
               <h5 className="footer-title text-primary-psg">About Our Team</h5>
               <p className="text-white mb-0">
                 For those of you who are serious about having more, doing more,
@@ -54,7 +54,7 @@ export function SiteFooter() {
                 more.
               </p>
             </div>
-            <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+            {/* <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
               <h5 className="footer-title text-primary-psg">Useful Links</h5>
               <div className="footer-menu">
                 <ul>
@@ -85,7 +85,7 @@ export function SiteFooter() {
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ export function SiteFooter() {
           <div className="row align-items-center copyright">
             <div className="col-12 col-md-6 text-center text-md-start">
               <div className="copyright-menu footer-menu">
-                <ul className="mb-0 justify-content-center justify-content-md-start list-unstyled">
+                {/* <ul className="mb-0 justify-content-center justify-content-md-start list-unstyled">
                   <li>
                     <a href="#">About us</a>
                   </li>
@@ -104,7 +104,7 @@ export function SiteFooter() {
                   <li>
                     <a href="#">Our History</a>
                   </li>
-                </ul>
+                </ul> */}
               </div>
             </div>
             <div className="col-12 col-md-6 text-center text-md-end mt-2 mt-md-0">

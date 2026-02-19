@@ -38,7 +38,7 @@ export default function AdminDashboard() {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom fontWeight="bold">
+      <Typography variant="h4" gutterBottom fontWeight="bold" color="black">
         Dashboard
       </Typography>
 

@@ -57,15 +57,6 @@ export default function PlayerSingle() {
                 <span className="d-block player-position">( Forward )</span>
                 <ul className="list-unstyled  mt-4">
                   <li className="d-flex mb-3 mx-0">
-                    <span className="me-4"> Nationality :</span>portugal
-                  </li>
-                  <li className="d-flex mb-3 mx-0">
-                    <span className="me-4"> Current Team :</span> Bengal Tigers
-                  </li>
-                  <li className="d-flex mb-3 mx-0">
-                    <span className="me-4"> Past Teams :</span> Pink Cougars
-                  </li>
-                  <li className="d-flex mb-3 mx-0">
                     <span className="me-4"> Age :</span> 50 Yers
                   </li>
                   <li className="d-flex mb-0 mx-0">

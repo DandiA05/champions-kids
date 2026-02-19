@@ -20,8 +20,11 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ThemeProvider } from "./theme-provider";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import GroupsIcon from "@mui/icons-material/Groups";
 
 const drawerWidth = 240;
 
@@ -31,9 +34,31 @@ interface MenuItem {
   path: string;
 }
 
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+
 const menuItems: MenuItem[] = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
   { text: "User Management", icon: <PeopleIcon />, path: "/admin/users" },
+  {
+    text: "Player Management",
+    icon: <SportsSoccerIcon />,
+    path: "/admin/players",
+  },
+  {
+    text: "Event Management",
+    icon: <FileUploadIcon />,
+    path: "/admin/events",
+  },
+  {
+    text: "Club Management",
+    icon: <GroupsIcon />,
+    path: "/admin/clubs",
+  },
+  {
+    text: "Match Management",
+    icon: <EmojiEventsIcon />,
+    path: "/admin/matches",
+  },
 ];
 
 export default function AdminLayout({

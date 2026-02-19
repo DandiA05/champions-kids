@@ -74,7 +74,7 @@ export function isAdmin(user: JWTPayload | null): boolean {
 // Cookie options for setting JWT
 export const cookieOptions = {
   httpOnly: true,
-  secure: false, // Set to false for local development to ensure cookie works over HTTP
+  secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
   maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
   path: "/",

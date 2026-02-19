@@ -25,6 +25,11 @@ header {
   background-color: var(--pgs_primary_color) !important;
 }
 
+.bg-secondary-psg {
+  --bs-bg-opacity: 1;
+  background-color: var(--pgs_secondary_color) !important;
+}
+
 .text-primary-psg {
   --bs-text-opacity: 1;
   color: var(--pgs_primary_color) !important;
@@ -113,4 +118,14 @@ header.header.header-sticky.default.inner-page-header {
 
 .blog-post.post-style-02 .blog-image .blog-post-date {
   background-color: #0B3C5D !important;
+}
+
+::selection {
+  background-color: #2196f3 !important;
+  color: white !important;
+}
+
+::-moz-selection {
+  background-color: #2196f3 !important;
+  color: white !important;
 }

@@ -1,5 +1,6 @@
 import LogoSlide from "@/components/logo-slide";
-import Link from "next/link";
+import LatestEvents from "@/components/latest-events";
+import TopPlayers from "@/components/top-players";
 
 export default function Home() {
   return (
@@ -8,19 +9,7 @@ export default function Home() {
         <div id="main-slider" className="swiper-container">
           <div className="slider-social">
             <div className="container">
-              <div className="slider-social-info">
-                <ul className="list-unstyled mb-0">
-                  <li>
-                    <a href="#"> FB </a>
-                  </li>
-                  <li>
-                    <a href="#"> IG </a>
-                  </li>
-                  <li>
-                    <a href="#"> TW </a>
-                  </li>
-                </ul>
-              </div>
+              <div className="slider-social-info"></div>
             </div>
           </div>
           <div className="swiper-wrapper">
@@ -75,11 +64,11 @@ export default function Home() {
                       data-duration="1.5s"
                       data-delay="2.0s"
                     >
-                      Lorem ipsum dolor sit amet, con secte tur adip si cin
-                      elit, do eius mod tempor in cidi dut ut la bore magna
-                      aliquat enim ad.
+                      Ajang pengembangan bakat sepak bola usia dini terbaik.
+                      Kami membantu mewujudkan mimpi sang juara melalui
+                      pelatihan profesional dan kurikulum sepak bola modern.
                     </p>
-                    <a
+                    {/* <a
                       href="/about-us"
                       className="btn btn-white mt-3 mt-md-4"
                       data-swiper-animation="fadeInUp"
@@ -87,7 +76,7 @@ export default function Home() {
                       data-delay="3.0s"
                     >
                       Read More
-                    </a>
+                    </a> */}
                     <div
                       className="pattern-02"
                       data-swiper-animation="fadeIn"
@@ -191,9 +180,9 @@ export default function Home() {
                       data-duration="1.5s"
                       data-delay="2.0s"
                     >
-                      Lorem ipsum dolor sit amet, con secte tur adip si cin
-                      elit, do eius mod tempor in cidi dut ut la bore magna
-                      aliquat enim ad.
+                      Bentuk karakter, disiplin, dan kerja sama tim melalui
+                      olahraga. Bergabunglah bersama Champions Kids dan rasakan
+                      pengalaman latihan sepak bola yang seru dan mengedukasi.
                     </p>
                     <a
                       href="about-us.html"
@@ -506,193 +495,11 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="space-pb classic-players px-0 px-md-5">
-        <div className="container-fluid">
-          <div className="row position-relative">
-            <div className="col-lg-4 pe-0 pe-lg-5">
-              <div className="section-title">
-                <h2 className="mb-0 text-white">Top Players Nows</h2>
-                <p className="text-white mt-2">
-                  For those of you who are serious about having more, doing
-                  more, giving more and being more, success is achievable with
-                  some understanding of what to do, some discipline around
-                  planning and execution of those plans and belief that you can
-                  achieve your desires.{" "}
-                </p>
-              </div>
-            </div>
-            <div className="col-lg-8 mt-5 mt-lg-0">
-              <div
-                className="owl-carousel"
-                data-nav-dots="false"
-                data-nav-arrow="true"
-                data-items="2"
-                data-xl-items="2"
-                data-lg-items="1"
-                data-md-items="1"
-                data-sm-items="1"
-                data-xs-items="1"
-                data-xx-items="1"
-                data-autoheight="true"
-              >
-                <div className="item  mb-4 mb-lg-0">
-                  <div className="player">
-                    <img
-                      className="img-fluid"
-                      src="/images/home-01/team-01.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div className="player-info">
-                    <span className="player-number">10</span>
-                    <div className="player-name">
-                      <h3 className="text-uppercase title">
-                        <a href="/player-single">Jason McElwaine</a>
-                      </h3>
-                      <span className="text-uppercase text-primary">
-                        Center
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="item mb-4 mb-lg-0">
-                  <div className="player">
-                    <img
-                      className="img-fluid"
-                      src="/images/home-01/team-02.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div className="player-info">
-                    <span className="player-number">88</span>
-                    <div className="player-name">
-                      <h3 className="text-uppercase title">
-                        <a href="/player-single">Cherry Blossom</a>
-                      </h3>
-                      <span className="text-uppercase text-primary">
-                        Defenders
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="item mb-4 mb-lg-0">
-                  <div className="player">
-                    <img
-                      className="img-fluid"
-                      src="/images/home-01/team-03.jpg"
-                      alt=""
-                    />
-                  </div>
-                  <div className="player-info">
-                    <span className="player-number">07</span>
-                    <div className="player-name">
-                      <h3 className="text-uppercase title">
-                        <a href="/player-single">Ginger Plant</a>
-                      </h3>
-                      <span className="text-uppercase text-primary">
-                        Midfielders
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* TOP PLAYERS NOW */}
+      <TopPlayers />
 
-      <section className="space-ptb latest-news latest-news-pattern">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-title text-center">
-                <h2 className="mb-0 text-white">Latest Events</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row mt-5">
-            <div className="col-lg-4 mb-4 mb-lg-0">
-              <div className="blog-post post-style-01">
-                <div className="blog-image">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/blog/01.jpg"
-                    alt=""
-                  />
-                  <div className="blog-post-date">
-                    <span className="date">19</span>
-                    <span className="month">Jan</span>
-                  </div>
-                </div>
-                <div className="blog-post-details">
-                  <h5 className="blog-title mb-2">
-                    <Link href="/event-single">
-                      A team above all. Above all a team.
-                    </Link>
-                  </h5>
-                  <p className="text-white mb-4">
-                    Trying to go through life without clarity is similar to
-                    sailing a rudder-less ship – no good thing can or will
-                    happen!
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4 mb-4 mb-lg-0">
-              <div className="blog-post post-style-01">
-                <div className="blog-image">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/blog/02.jpg"
-                    alt=""
-                  />
-                  <div className="blog-post-date">
-                    <span className="date">25</span>
-                    <span className="month">Jan</span>
-                  </div>
-                </div>
-                <div className="blog-post-details">
-                  <h5 className="blog-title mb-2">
-                    <Link href="/event-single">
-                      Championships are won at practice.
-                    </Link>
-                  </h5>
-                  <p className="text-white mb-4">
-                    The best way is to develop and follow a plan. Start with
-                    your goals in mind and then work backwards to develop the
-                    plan.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="blog-post post-style-01">
-                <div className="blog-image">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/blog/03.jpg"
-                    alt=""
-                  />
-                  <div className="blog-post-date">
-                    <span className="date">02</span>
-                    <span className="month">Feb</span>
-                  </div>
-                </div>
-                <div className="blog-post-details">
-                  <h5 className="blog-title mb-2">
-                    <Link href="/event-single">We have a mission to win</Link>
-                  </h5>
-                  <p className="text-white mb-4">
-                    It is truly amazing the damage that we, as parents, can
-                    inflict on our children. So why do we do it? For the most
-                    part,
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* LATEST EVENTS */}
+      <LatestEvents />
 
       {/* <div className="client-logo py-5 bg-primary-psg">
         <div className="container">

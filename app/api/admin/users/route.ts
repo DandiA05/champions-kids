@@ -8,7 +8,8 @@ const createUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email format"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["admin", "non-admin"]),
+  role: z.enum(["admin", "non-admin", "player"]),
+  is_active: z.boolean().optional(),
 });
 
 // GET - List all users (admin only)
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, email, password, role } = validation.data;
+    const { name, email, password, role, is_active } = validation.data;
 
     // Check if email already exists
     const existingUser = await db.getUserByEmail(email);
@@ -77,7 +78,13 @@ export async function POST(request: NextRequest) {
     const passwordHash = await hashPassword(password);
 
     // Create user
-    const newUser = await db.createUser(name, email, passwordHash, role);
+    const newUser = await db.createUser(
+      name,
+      email,
+      passwordHash,
+      role,
+      is_active,
+    );
 
     // Return created user (without password hash)
     return NextResponse.json(
@@ -88,6 +95,7 @@ export async function POST(request: NextRequest) {
           name: newUser.name,
           email: newUser.email,
           role: newUser.role,
+          is_active: newUser.is_active,
           created_at: newUser.created_at,
         },
       },
