@@ -1,13 +1,13 @@
 import { sql } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // PUT update club
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
     const { name, logo_url } = body;
 
@@ -41,11 +41,11 @@ export async function PUT(
 
 // DELETE club
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } },
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const result = await sql`
       DELETE FROM clubs WHERE id = ${id} RETURNING id
@@ -55,7 +55,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Club not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Club deleted successfully" });
+    return NextResponse.json({
+      message: "Club deleted successfully",
+    });
   } catch (error) {
     console.error("DELETE club error:", error);
     return NextResponse.json(

@@ -1,14 +1,15 @@
 import { sql } from "@/lib/db";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // PUT update match
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } },
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const body = await request.json();
+
     const {
       home_club_id,
       away_club_id,
@@ -41,8 +42,12 @@ export async function PUT(
         match_date = ${match_date},
         match_time = ${match_time || null},
         venue = ${venue || null},
-        score_home = ${score_home !== undefined && score_home !== "" ? score_home : null},
-        score_away = ${score_away !== undefined && score_away !== "" ? score_away : null},
+        score_home = ${
+          score_home !== undefined && score_home !== "" ? score_home : null
+        },
+        score_away = ${
+          score_away !== undefined && score_away !== "" ? score_away : null
+        },
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
@@ -64,11 +69,11 @@ export async function PUT(
 
 // DELETE match
 export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } },
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
 
     const result = await sql`
       DELETE FROM matches WHERE id = ${id} RETURNING id
@@ -78,7 +83,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Match deleted successfully" });
+    return NextResponse.json({
+      message: "Match deleted successfully",
+    });
   } catch (error) {
     console.error("DELETE match error:", error);
     return NextResponse.json(
