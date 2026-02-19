@@ -84,7 +84,7 @@ export async function DELETE(
     }
 
     return NextResponse.json({
-      message: "Match deleted successfully",
+      message: "Match deleted successfully!",
     });
   } catch (error) {
     console.error("DELETE match error:", error);
