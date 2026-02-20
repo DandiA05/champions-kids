@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 // PUT update match
 export async function PUT(
@@ -18,6 +19,8 @@ export async function PUT(
       venue,
       score_home,
       score_away,
+      result: resultRaw,
+      remark,
     } = body;
 
     if (!home_club_id || !away_club_id || !match_date) {
@@ -48,6 +51,8 @@ export async function PUT(
         score_away = ${
           score_away !== undefined && score_away !== "" ? score_away : null
         },
+        result = ${resultRaw || null},
+        remark = ${remark || null},
         updated_at = NOW()
       WHERE id = ${id}
       RETURNING *
@@ -57,6 +62,7 @@ export async function PUT(
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
 
+    revalidatePath("/");
     return NextResponse.json({ match: result[0] });
   } catch (error) {
     console.error("PUT match error:", error);
@@ -83,6 +89,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Match not found" }, { status: 404 });
     }
 
+    revalidatePath("/");
     return NextResponse.json({
       message: "Match deleted successfully!",
     });

@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 // PUT update club
 export async function PUT(
@@ -9,7 +10,7 @@ export async function PUT(
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const { name, logo_url } = body;
+    const { name, logo_url, is_our_team } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -19,8 +20,12 @@ export async function PUT(
     }
 
     const result = await sql`
-      UPDATE clubs
-      SET name = ${name}, logo_url = ${logo_url || null}, updated_at = NOW()
+      UPDATE clubs 
+      SET 
+        name = ${name},
+        logo_url = ${logo_url || null},
+        is_our_team = ${is_our_team || false},
+        updated_at = CURRENT_TIMESTAMP
       WHERE id = ${id}
       RETURNING *
     `;
@@ -29,6 +34,7 @@ export async function PUT(
       return NextResponse.json({ error: "Club not found" }, { status: 404 });
     }
 
+    revalidatePath("/");
     return NextResponse.json({ club: result[0] });
   } catch (error) {
     console.error("PUT club error:", error);
@@ -55,6 +61,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Club not found" }, { status: 404 });
     }
 
+    revalidatePath("/");
     return NextResponse.json({
       message: "Club deleted successfully",
     });

@@ -1,3 +1,25 @@
+@import "tailwindcss";
+
+// Fix conflict between Tailwind and Bootstrap
+.collapse:not(.show) {
+  display: none !important;
+}
+
+.navbar-collapse.collapse {
+  visibility: visible !important;
+  display: flex !important;
+  flex-basis: auto !important;
+}
+
+@media (max-width: 1199.98px) {
+  .navbar-collapse.collapse:not(.show) {
+    display: none !important;
+  }
+  .navbar-collapse.collapse.show {
+    display: block !important;
+  }
+}
+
 @import "../styles/scss/style.scss";
 @import "../public/css/select2/select2.css";
 
@@ -128,4 +150,55 @@ header.header.header-sticky.default.inner-page-header {
 ::-moz-selection {
   background-color: #2196f3 !important;
   color: white !important;
+}
+
+.btn.text-secondary:hover, .btn.text-white:hover {
+    color: black !important;
+}
+
+.owl-carousel .owl-nav button:hover {
+    background-color: black !important;
+    color: white !important;
+}
+
+/* Quill Content Styling */
+.quill-content {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  iframe, video {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  table {
+    width: 100% !important;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    
+    td, th {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px;
+    }
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+  }
+}
+
+a:focus, a:hover {
+    color: black !important;
+    text-decoration: none !important;
+}
+
+.upcoming-match .match-date-time {
+    padding: 0 20px;
 }

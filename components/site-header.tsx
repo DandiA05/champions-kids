@@ -77,7 +77,7 @@ export function SiteHeader({ isHomePage = false }: SiteHeaderProps) {
                   <img src="/images/svg/menu.svg" alt="#" />
                   <img
                     className="menu-dark"
-                    src="/images/svg/menu-dark.svg"
+                    src="/images/svg/menu.svg"
                     alt="#"
                   />
                 </a>

@@ -26,6 +26,7 @@ import {
   MenuItem,
   DialogContentText,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -51,6 +52,8 @@ export default function UserManagement() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -200,6 +203,17 @@ export default function UserManagement() {
     });
   };
 
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <Box
@@ -286,7 +300,8 @@ export default function UserManagement() {
           <Table>
             <TableHead sx={{ bgcolor: "#fafafa" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>No</TableCell>
+                {/* <TableCell sx={{ fontWeight: "700" }}>ID</TableCell> */}
                 <TableCell sx={{ fontWeight: "700" }}>Name</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Email</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Role</TableCell>
@@ -298,61 +313,101 @@ export default function UserManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((user) => (
-                <TableRow
-                  key={user.id}
-                  hover
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell sx={{ fontWeight: "600" }}>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={user.role}
-                      color={user.role === "admin" ? "primary" : "default"}
-                      size="small"
-                      sx={{ fontWeight: "700", borderRadius: "8px" }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={user.is_active ? "Active" : "Inactive"}
-                      color={user.is_active ? "success" : "error"}
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleToggleStatusClick(user)}
-                      sx={{
-                        fontWeight: "700",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        "&:hover": {
-                          bgcolor: user.is_active
-                            ? "success.light"
-                            : "error.light",
-                          opacity: 0.8,
-                        },
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ color: "textSecondary" }}>
-                    {formatDate(user.created_at)}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenDialog(user)}
-                      sx={{
-                        "&:hover": { bgcolor: "primary.light", color: "white" },
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {users
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((user, index) => (
+                  <TableRow
+                    key={user.id}
+                    hover
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
+                    {/* <TableCell>{user.id}</TableCell> */}
+                    <TableCell sx={{ fontWeight: "600" }}>
+                      {user.name}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={user.role}
+                        color={user.role === "admin" ? "primary" : "default"}
+                        size="small"
+                        sx={{ fontWeight: "700", borderRadius: "8px" }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={user.is_active ? "Active" : "Inactive"}
+                        color={user.is_active ? "success" : "error"}
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleToggleStatusClick(user)}
+                        sx={{
+                          fontWeight: "700",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          "&:hover": {
+                            bgcolor: user.is_active
+                              ? "success.light"
+                              : "error.light",
+                            opacity: 0.8,
+                          },
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: "textSecondary" }}>
+                      {formatDate(user.created_at)}
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleOpenDialog(user)}
+                        sx={{
+                          "&:hover": {
+                            bgcolor: "primary.light",
+                            color: "white",
+                          },
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 50, 100]}
+            component="div"
+            count={users.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.05)",
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "start",
+                display: "flex",
+                flexWrap: "wrap",
+                textAlign: "center",
+                px: 2,
+              },
+              "& .MuiTablePagination-spacer": {
+                display: "none",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+                {
+                  fontWeight: "600",
+                  color: "black",
+                  margin: "0 8px",
+                },
+              "& .MuiTablePagination-actions": {
+                color: "black",
+                marginLeft: 0,
+              },
+            }}
+          />
         </TableContainer>
       )}
 

@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { verifyUserFromCookies, isAdmin } from "@/lib/auth";
@@ -71,6 +72,11 @@ export async function PUT(
       return NextResponse.json({ error: "Player not found" }, { status: 404 });
     }
 
+    // Revalidate relevant paths
+    revalidatePath("/");
+    revalidatePath("/team");
+    revalidatePath(`/players/${id}`);
+
     return NextResponse.json({ player: updatedPlayer[0] });
   } catch (error) {
     console.error("Error updating player:", error);
@@ -102,6 +108,11 @@ export async function DELETE(
     if (deletedPlayer.length === 0) {
       return NextResponse.json({ error: "Player not found" }, { status: 404 });
     }
+
+    // Revalidate relevant paths
+    revalidatePath("/");
+    revalidatePath("/team");
+    revalidatePath(`/players/${id}`);
 
     return NextResponse.json({ id: deletedPlayer[0].id });
   } catch (error) {

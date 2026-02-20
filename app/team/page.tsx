@@ -1,7 +1,8 @@
 import LogoSlide from "@/components/logo-slide";
 import Link from "next/link";
 import { sql } from "@/lib/db";
-import { AGE_CATEGORIES } from "@/lib/constants";
+import { AGE_CATEGORIES, POSITIONS } from "@/lib/constants";
+import { getPositionColor } from "@/lib/player-helpers";
 
 export default async function Team(props: {
   searchParams: Promise<{ category?: string }>;
@@ -83,15 +84,14 @@ export default async function Team(props: {
               <div className="d-flex flex-wrap justify-content-center gap-2">
                 <Link
                   href="/team"
-                  className={`btn btn-sm ${
+                  className={`btn btn-sm hover:text-black ${
                     selectedCategory === "all"
-                      ? "btn-primary-psg"
-                      : "btn-outline-light"
+                      ? "btn-light text-black"
+                      : "btn-outline-light text-white"
                   }`}
                   style={{
                     borderRadius: "20px",
                     padding: "8px 20px",
-                    color: "#F5A623",
                   }}
                 >
                   All Players
@@ -100,15 +100,14 @@ export default async function Team(props: {
                   <Link
                     key={cat}
                     href={`/team?category=${cat}`}
-                    className={`btn btn-sm ${
+                    className={`btn btn-sm hover:text-black ${
                       selectedCategory === cat
-                        ? "btn-primary-psg"
-                        : "btn-outline-light"
+                        ? "btn-light text-black"
+                        : "btn-outline-light text-white"
                     }`}
                     style={{
                       borderRadius: "20px",
                       padding: "8px 20px",
-                      color: "#F5A623",
                     }}
                   >
                     {cat}
@@ -123,20 +122,24 @@ export default async function Team(props: {
               players.map((player: any) => (
                 <div className="col-lg-3 col-md-6 mb-4" key={player.id}>
                   <div className="team">
-                    <div className="player">
-                      <img
-                        className="img-fluid"
-                        src={player.photo_url || "/images/home-01/team-01.jpg"}
-                        alt={player.user_name}
-                        style={{
-                          width: "100%",
-                          aspectRatio: "3 / 4",
-                          objectFit: "cover",
-                          backgroundColor: "white",
-                          display: "block",
-                        }}
-                      />
-                    </div>
+                    <Link href={`/players/${player.id}`}>
+                      <div className="player">
+                        <img
+                          className="img-fluid"
+                          src={
+                            player.photo_url || "/images/home-01/team-01.jpg"
+                          }
+                          alt={player.user_name}
+                          style={{
+                            width: "100%",
+                            aspectRatio: "3 / 4",
+                            objectFit: "cover",
+                            backgroundColor: "white",
+                            display: "block",
+                          }}
+                        />
+                      </div>
+                    </Link>
                     <div className="player-info">
                       <span className="player-number">
                         {player.jersey_number || "00"}
@@ -148,8 +151,18 @@ export default async function Team(props: {
                           </Link>
                         </h3>
                         <div className="d-flex justify-content-between align-items-center">
-                          <span className="text-uppercase text-primary-psg">
-                            {player.position}
+                          <span
+                            className="badge text-white px-4 py-2"
+                            style={{
+                              fontSize: "0.7rem",
+                              borderRadius: "30px",
+                              letterSpacing: "1px",
+                              backgroundColor: getPositionColor(
+                                player.position,
+                              ),
+                            }}
+                          >
+                            {player.position?.toUpperCase()}
                           </span>
                           <span
                             className="badge bg-dark"

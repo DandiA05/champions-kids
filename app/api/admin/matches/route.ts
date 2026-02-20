@@ -1,5 +1,6 @@
 import { sql } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 // GET all matches with club details
 export async function GET() {
@@ -9,8 +10,10 @@ export async function GET() {
         m.*,
         hc.name AS home_club_name,
         hc.logo_url AS home_club_logo,
+        hc.is_our_team AS home_club_is_our_team,
         ac.name AS away_club_name,
-        ac.logo_url AS away_club_logo
+        ac.logo_url AS away_club_logo,
+        ac.is_our_team AS away_club_is_our_team
       FROM matches m
       JOIN clubs hc ON m.home_club_id = hc.id
       JOIN clubs ac ON m.away_club_id = ac.id
@@ -38,6 +41,8 @@ export async function POST(request: Request) {
       venue,
       score_home,
       score_away,
+      result: resultRaw,
+      remark,
     } = body;
 
     if (!home_club_id || !away_club_id || !match_date) {
@@ -57,17 +62,20 @@ export async function POST(request: Request) {
     const result = await sql`
       INSERT INTO matches (
         home_club_id, away_club_id, match_date, match_time, venue,
-        score_home, score_away
+        score_home, score_away, result, remark
       )
       VALUES (
         ${home_club_id}, ${away_club_id}, ${match_date},
         ${match_time || null}, ${venue || null},
         ${score_home !== undefined && score_home !== "" ? score_home : null},
-        ${score_away !== undefined && score_away !== "" ? score_away : null}
+        ${score_away !== undefined && score_away !== "" ? score_away : null},
+        ${resultRaw || null},
+        ${remark || null}
       )
       RETURNING *
     `;
 
+    revalidatePath("/");
     return NextResponse.json({ match: result[0] }, { status: 201 });
   } catch (error) {
     console.error("POST match error:", error);

@@ -1,6 +1,9 @@
 import LogoSlide from "@/components/logo-slide";
 import LatestEvents from "@/components/latest-events";
 import TopPlayers from "@/components/top-players";
+import LatestResults from "@/components/latest-results";
+import MatchSchedule from "@/components/match-schedule";
+import MatchCountdown from "@/components/match-countdown";
 
 export default function Home() {
   return (
@@ -184,7 +187,7 @@ export default function Home() {
                       olahraga. Bergabunglah bersama Champions Kids dan rasakan
                       pengalaman latihan sepak bola yang seru dan mengedukasi.
                     </p>
-                    <a
+                    {/* <a
                       href="about-us.html"
                       className="btn btn-white mt-3 mt-md-4"
                       data-swiper-animation="fadeInUp"
@@ -192,7 +195,7 @@ export default function Home() {
                       data-delay="3.0s"
                     >
                       Read More
-                    </a>
+                    </a> */}
                   </div>
                 </div>
               </div>
@@ -225,57 +228,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="tournament-countdown">
-        <div className="container-fluid">
-          <div className="row align-items-center">
-            <div className="col-xl-4 col-lg-12 d-flex justify-content-center justify-content-xl-start text-center text-xl-start mb-4 mb-xl-0">
-              <div className="tournament-title">
-                <h2>Tournament starts in</h2>
-                <span className="text-white">Semi-Final</span>
-              </div>
-            </div>
-            <div className="col-xl-4 col-lg-12 justify-content-lg-center mb-4 mb-xl-0">
-              <div className="countdown-main">
-                <div className="countdown">
-                  <span className="days">00</span>
-                  <p className="days_ref">Days</p>
-                </div>
-                <div className="countdown">
-                  <span className="hours">00</span>
-                  <p className="hours_ref">Hrs</p>
-                </div>
-                <div className="countdown">
-                  <span className="minutes">00</span>
-                  <p className="minutes_ref">Min</p>
-                </div>
-                <div className="countdown">
-                  <span className="seconds">00</span>
-                  <p className="seconds_ref">Sec</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-lg-12">
-              <div className="upcoming-match d-lg-flex align-items-center justify-content-center justify-content-xl-end">
-                <div className="match-team">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/team-logo-01.png"
-                    alt=""
-                  />
-                </div>
-                <h2 className="px-4 px-lg-5">V.S</h2>
-                <div className="match-team">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/team-logo-02.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MatchCountdown />
 
       <section className="space-ptb about">
         <div className="container">
@@ -370,130 +323,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="space-ptb latest-results">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <div className="section-title text-center">
-                <h2 className="mb-0 text-white">Latest Results</h2>
-              </div>
-            </div>
-          </div>
-          <div className="row mt-5 align-items-center">
-            <div className="col-md-12 col-lg-4 text-center mb-4 mb-lg-0">
-              <div className="d-lg-flex align-items-center">
-                <h3>Ligers</h3>
-                <img
-                  className="img-fluid ms-0 ms-lg-4 ms-xl-5"
-                  src="/images/home-01/team-logo-03.png"
-                  alt=""
-                />
-              </div>
-            </div>
-            <div className="col-md-12 col-lg-4 text-center mb-4 mb-lg-0">
-              <h5>Premier League</h5>
-              <h2>
-                <span>03</span> : <span>02</span>
-              </h2>
-              <div className="time-location">
-                <span className="time">
-                  <i className="fa-regular fa-clock"></i>1:30 PM
-                </span>
-                <span className="location">
-                  <i className="fa-solid fa-location-dot"></i>Maracanã Stadium
-                </span>
-              </div>
-            </div>
-            <div className="col-md-12 col-lg-4 text-center">
-              <div className="d-lg-flex align-items-center justify-content-end">
-                <img
-                  className="img-fluid me-0 me-lg-4 me-xl-5"
-                  src="/images/home-01/team-logo-04.png"
-                  alt=""
-                />
-                <h3>Cheetahs</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LatestResults />
 
-      <section className="space-ptb match-schedule overlay-top">
-        <div className="container bg-light p-5">
-          <div className="row">
-            <div className="col-md-12 ">
-              <div className="section-title mb-5">
-                <h2>Match Schedule</h2>
-              </div>
-            </div>
-            <div className="col-sm-12">
-              <div
-                className="owl-carousel arrow-top-right match-schedule-slider"
-                data-nav-dots="false"
-                data-nav-arrow="true"
-                data-items="3"
-                data-xl-items="2"
-                data-lg-items="2"
-                data-md-items="2"
-                data-sm-items="2"
-                data-xs-items="1"
-                data-xx-items="1"
-                data-autoheight="true"
-              >
-                <div className="item">
-                  <div className="upcoming-match">
-                    <div className="match-team">
-                      <img
-                        className="img-fluid"
-                        src="/images/home-01/team-logo-05.png"
-                        alt=""
-                      />
-                    </div>
-                    <div className="match-date-time">
-                      <span className="match-time">1:30 PM</span>
-                      <span className="match-date">
-                        <i className="fa-solid fa-calendar-days"></i>Mar 19 2023
-                      </span>
-                    </div>
-                    <div className="match-team">
-                      <img
-                        className="img-fluid"
-                        src="/images/home-01/team-logo-06.png"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="item">
-                  <div className="upcoming-match">
-                    <div className="match-team">
-                      <img
-                        className="img-fluid"
-                        src="/images/home-01/team-logo-05.png"
-                        alt=""
-                      />
-                    </div>
-                    <div className="match-date-time">
-                      <span className="match-time">2:45 PM</span>
-                      <span className="match-date">
-                        <i className="fa-solid fa-calendar-days"></i>Mar 25 2023
-                      </span>
-                    </div>
-                    <div className="match-team">
-                      <img
-                        className="img-fluid"
-                        src="/images/home-01/team-logo-07.png"
-                        alt=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* More items would be repeated here as per template... */}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MatchSchedule />
 
       {/* TOP PLAYERS NOW */}
       <TopPlayers />

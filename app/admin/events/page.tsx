@@ -26,6 +26,7 @@ import {
   Tab,
   Divider,
   MenuItem,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -103,6 +104,8 @@ export default function EventManagementPage() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Preview states
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -201,6 +204,17 @@ export default function EventManagementPage() {
       });
     }
     setOpen(true);
+  };
+
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handlePreviewClose = () => {
@@ -453,9 +467,8 @@ export default function EventManagementPage() {
           <Table>
             <TableHead sx={{ bgcolor: "#fafafa" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>
-                  Banner
-                </TableCell>
+                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>No.</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Banner</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Title</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Documentation</TableCell>
@@ -467,113 +480,147 @@ export default function EventManagementPage() {
             <TableBody>
               {filteredAndSortedEvents.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
+                  <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
                     No events found.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSortedEvents.map((event) => (
-                  <TableRow
-                    key={event.id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>
-                      <Box
-                        onClick={() => {
-                          if (event.banner_url) {
-                            handlePreviewOpen(event.banner_url);
-                          }
-                        }}
-                        sx={{
-                          cursor: "zoom-in",
-                          transition: "all 0.2s",
-                          display: "inline-block",
-                          "&:hover": {
-                            transform: "scale(1.05)",
-                            filter: "brightness(0.9)",
-                          },
-                        }}
-                      >
-                        <Avatar
-                          src={event.banner_url}
-                          variant="rounded"
+                filteredAndSortedEvents
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((event, index) => (
+                    <TableRow
+                      key={event.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
+                      <TableCell>
+                        <Box
+                          onClick={() => {
+                            if (event.banner_url) {
+                              handlePreviewOpen(event.banner_url);
+                            }
+                          }}
                           sx={{
-                            width: 60,
-                            height: 40,
-                            borderRadius: "8px",
-                            bgcolor: "rgba(0,0,0,0.05)",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            cursor: "zoom-in",
+                            transition: "all 0.2s",
+                            display: "inline-block",
+                            "&:hover": {
+                              transform: "scale(1.05)",
+                              filter: "brightness(0.9)",
+                            },
                           }}
                         >
-                          <ImageIcon />
-                        </Avatar>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        fontWeight="700"
-                        color="black"
-                      >
-                        {event.title}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="textSecondary">
-                        {event.event_date
-                          ? new Date(event.event_date).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              },
-                            )
-                          : "N/A"}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <CollectionsIcon fontSize="small" color="action" />
-                        <Typography variant="body2" fontWeight="600">
-                          {event.documentation_urls?.length || 0}
+                          <Avatar
+                            src={event.banner_url}
+                            variant="rounded"
+                            sx={{
+                              width: 60,
+                              height: 40,
+                              borderRadius: "8px",
+                              bgcolor: "rgba(0,0,0,0.05)",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                            }}
+                          >
+                            <ImageIcon />
+                          </Avatar>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography
+                          variant="body2"
+                          fontWeight="700"
+                          color="black"
+                        >
+                          {event.title}
                         </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleOpen(event)}
-                        sx={{
-                          mr: 1,
-                          "&:hover": {
-                            bgcolor: "primary.light",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDeleteOpen(event)}
-                        sx={{
-                          "&:hover": { bgcolor: "error.light", color: "white" },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="textSecondary">
+                          {event.event_date
+                            ? new Date(event.event_date).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )
+                            : "N/A"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <CollectionsIcon fontSize="small" color="action" />
+                          <Typography variant="body2" fontWeight="600">
+                            {event.documentation_urls?.length || 0}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleOpen(event)}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              bgcolor: "primary.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDeleteOpen(event)}
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "error.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredAndSortedEvents.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.05)",
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "start",
+              },
+              "& .MuiTablePagination-spacer": {
+                display: "none",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+                {
+                  fontWeight: "600",
+                  color: "black",
+                  margin: "0 8px",
+                },
+              "& .MuiTablePagination-actions": {
+                color: "black",
+                marginLeft: 0,
+              },
+            }}
+          />
         </TableContainer>
       )}
 

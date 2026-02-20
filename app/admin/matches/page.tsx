@@ -23,17 +23,20 @@ import {
   CircularProgress,
   Alert,
   Chip,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { formatDate, getLocalDateString } from "@/helper/helper";
 
 interface Club {
   id: number;
   name: string;
   logo_url: string | null;
+  is_our_team: boolean | null;
 }
 
 interface Match {
@@ -42,17 +45,35 @@ interface Match {
   away_club_id: number;
   home_club_name: string;
   home_club_logo: string | null;
+  home_club_is_our_team: boolean | null;
   away_club_name: string;
   away_club_logo: string | null;
+  away_club_is_our_team: boolean | null;
   match_date: string;
   match_time: string | null;
   venue: string | null;
   score_home: number | null;
   score_away: number | null;
+  result: string | null;
+  remark: string | null;
   created_at: string;
 }
 
-const initialMatchState = {
+interface MatchFormState {
+  id?: number;
+  home_club_id: string | number;
+  away_club_id: string | number;
+  match_date: string;
+  match_time: string;
+  venue: string;
+  score_home: string | number;
+  score_away: string | number;
+  result: string;
+  remark: string;
+}
+
+const initialMatchState: MatchFormState = {
+  id: undefined,
   home_club_id: "",
   away_club_id: "",
   match_date: "",
@@ -60,17 +81,25 @@ const initialMatchState = {
   venue: "",
   score_home: "",
   score_away: "",
+  result: "",
+  remark: "",
 };
 
 export default function MatchManagementPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<any>(initialMatchState);
+  const [selectedMatch, setSelectedMatch] =
+    useState<MatchFormState>(initialMatchState);
+  const [filter, setFilter] = useState("all"); // all, win, lose, draw
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
@@ -92,6 +121,18 @@ export default function MatchManagementPage() {
     }
   };
 
+  const filteredMatches = matches.filter((m) => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch =
+      m.home_club_name?.toLowerCase().includes(searchLower) ||
+      m.away_club_name?.toLowerCase().includes(searchLower) ||
+      m.venue?.toLowerCase().includes(searchLower);
+
+    const matchesFilter = filter === "all" || m.result === filter;
+
+    return matchesSearch && matchesFilter;
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -104,12 +145,14 @@ export default function MatchManagementPage() {
         home_club_id: match.home_club_id,
         away_club_id: match.away_club_id,
         match_date: match.match_date
-          ? new Date(match.match_date).toISOString().split("T")[0]
+          ? getLocalDateString(match.match_date)
           : "",
         match_time: match.match_time || "",
         venue: match.venue || "",
         score_home: match.score_home !== null ? String(match.score_home) : "",
         score_away: match.score_away !== null ? String(match.score_away) : "",
+        result: match.result || "",
+        remark: match.remark || "",
       });
     } else {
       setIsEditing(false);
@@ -138,7 +181,7 @@ export default function MatchManagementPage() {
       setError("Home and Away club cannot be the same");
       return;
     }
-
+    setSaving(true);
     try {
       const url = isEditing
         ? `/api/admin/matches/${selectedMatch.id}`
@@ -162,6 +205,8 @@ export default function MatchManagementPage() {
             selectedMatch.score_away !== ""
               ? Number(selectedMatch.score_away)
               : null,
+          result: selectedMatch.result || null,
+          remark: selectedMatch.remark || null,
         }),
       });
 
@@ -174,6 +219,8 @@ export default function MatchManagementPage() {
       }
     } catch {
       setError("An error occurred while saving");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -191,12 +238,16 @@ export default function MatchManagementPage() {
   const isMatchFinished = (match: Match) =>
     match.score_home !== null && match.score_away !== null;
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const formatTime = (timeStr: string | null) => {
     if (!timeStr) return "-";
@@ -241,6 +292,213 @@ export default function MatchManagementPage() {
         </Button>
       </Box>
 
+      {/* Stats Cards */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 3,
+          mb: 4,
+          flexDirection: { xs: "column", sm: "row" },
+          flexWrap: { sm: "wrap", md: "nowrap" },
+          "& > *": {
+            flex: 1,
+            minWidth: { xs: "100%", sm: "calc(50% - 12px)", md: "0" },
+          },
+        }}
+      >
+        <Paper
+          sx={{
+            p: 2.5,
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 4px 20px -5px rgba(0,0,0,0.05)",
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                bgcolor: "rgba(0,0,0,0.04)",
+                p: 1.5,
+                borderRadius: "12px",
+              }}
+            >
+              <EmojiEventsIcon sx={{ color: "text.secondary" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight="600"
+              >
+                Total Played
+              </Typography>
+              <Typography variant="h5" fontWeight="800">
+                {matches.length}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper
+          sx={{
+            p: 2.5,
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 4px 20px -5px rgba(0,0,0,0.05)",
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                bgcolor: "rgba(34, 197, 94, 0.1)",
+                p: 1.5,
+                borderRadius: "12px",
+              }}
+            >
+              <EmojiEventsIcon sx={{ color: "#22c55e" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight="600"
+              >
+                Wins
+              </Typography>
+              <Typography
+                variant="h5"
+                fontWeight="800"
+                sx={{ color: "#22c55e" }}
+              >
+                {matches.filter((m) => m.result === "win").length}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper
+          sx={{
+            p: 2.5,
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 4px 20px -5px rgba(0,0,0,0.05)",
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                bgcolor: "rgba(239, 68, 68, 0.1)",
+                p: 1.5,
+                borderRadius: "12px",
+              }}
+            >
+              <EmojiEventsIcon sx={{ color: "#ef4444" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight="600"
+              >
+                Losses
+              </Typography>
+              <Typography
+                variant="h5"
+                fontWeight="800"
+                sx={{ color: "#ef4444" }}
+              >
+                {matches.filter((m) => m.result === "lose").length}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+
+        <Paper
+          sx={{
+            p: 2.5,
+            borderRadius: "16px",
+            border: "1px solid rgba(0,0,0,0.05)",
+            boxShadow: "0 4px 20px -5px rgba(0,0,0,0.05)",
+          }}
+        >
+          <Box display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                bgcolor: "rgba(245, 158, 11, 0.1)",
+                p: 1.5,
+                borderRadius: "12px",
+              }}
+            >
+              <EmojiEventsIcon sx={{ color: "#f59e0b" }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight="600"
+              >
+                Draws
+              </Typography>
+              <Typography
+                variant="h5"
+                fontWeight="800"
+                sx={{ color: "#f59e0b" }}
+              >
+                {matches.filter((m) => m.result === "draw").length}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+
+      {/* Statistics & Filters */}
+      <Paper
+        sx={{
+          p: 2,
+          mb: 4,
+          borderRadius: "16px",
+          border: "1px solid rgba(0,0,0,0.05)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 2,
+          alignItems: "center",
+          bgcolor: "white",
+        }}
+      >
+        <TextField
+          size="small"
+          placeholder="Cari lawan atau venue..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{
+            flexGrow: 1,
+            minWidth: "250px",
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "10px",
+            },
+          }}
+        />
+        <TextField
+          select
+          size="small"
+          label="Filter Hasil"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          sx={{
+            minWidth: "160px",
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "10px",
+            },
+          }}
+        >
+          <MenuItem value="all">Semua Hasil</MenuItem>
+          <MenuItem value="win">Menang (WIN)</MenuItem>
+          <MenuItem value="lose">Kalah (LOSE)</MenuItem>
+          <MenuItem value="draw">Seri (DRAW)</MenuItem>
+        </TextField>
+      </Paper>
+
       {error && (
         <Alert severity="error" sx={{ mb: 3, borderRadius: "12px" }}>
           {error}
@@ -271,11 +529,14 @@ export default function MatchManagementPage() {
           <Table>
             <TableHead sx={{ bgcolor: "#fafafa" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>Match</TableCell>
+                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>No.</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Match</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Score</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Time</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Venue</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Remark</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Result</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Status</TableCell>
                 <TableCell align="right" sx={{ fontWeight: "700" }}>
                   Actions
@@ -283,189 +544,274 @@ export default function MatchManagementPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {matches.length === 0 ? (
+              {filteredMatches.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={10}
                     align="center"
                     sx={{ py: 6, color: "text.secondary" }}
                   >
-                    No matches found. Add your first match!
+                    No matches found.
                   </TableCell>
                 </TableRow>
               ) : (
-                matches.map((match) => (
-                  <TableRow
-                    key={match.id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    {/* Match column: Home vs Away */}
-                    <TableCell>
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
-                      >
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <Avatar
-                            src={match.home_club_logo || undefined}
-                            variant="rounded"
-                            sx={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: "8px",
-                              bgcolor: "rgba(0,0,0,0.05)",
-                              "& img": { objectFit: "contain", p: "2px" },
-                            }}
-                          >
-                            {!match.home_club_logo &&
-                              match.home_club_name?.charAt(0)}
-                          </Avatar>
-                          <Typography
-                            variant="body2"
-                            fontWeight="700"
-                            color="black"
-                          >
-                            {match.home_club_name}
-                          </Typography>
-                        </Box>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          fontWeight="800"
-                          sx={{ mx: 0.5 }}
-                        >
-                          vs
-                        </Typography>
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                        >
-                          <Avatar
-                            src={match.away_club_logo || undefined}
-                            variant="rounded"
-                            sx={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: "8px",
-                              bgcolor: "rgba(0,0,0,0.05)",
-                              "& img": { objectFit: "contain", p: "2px" },
-                            }}
-                          >
-                            {!match.away_club_logo &&
-                              match.away_club_name?.charAt(0)}
-                          </Avatar>
-                          <Typography
-                            variant="body2"
-                            fontWeight="700"
-                            color="black"
-                          >
-                            {match.away_club_name}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </TableCell>
-
-                    {/* Score */}
-                    <TableCell>
-                      {isMatchFinished(match) ? (
+                filteredMatches
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((match, index) => (
+                    <TableRow
+                      key={match.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
+                      {/* Match column: Home vs Away */}
+                      <TableCell>
                         <Box
                           sx={{
-                            display: "inline-flex",
+                            display: "flex",
                             alignItems: "center",
-                            gap: 0.5,
-                            bgcolor: "rgba(0,0,0,0.04)",
-                            borderRadius: "8px",
-                            px: 1.5,
-                            py: 0.5,
+                            gap: 1.5,
                           }}
                         >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <Avatar
+                              src={match.home_club_logo || undefined}
+                              variant="rounded"
+                              sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: "8px",
+                                bgcolor: "rgba(0,0,0,0.05)",
+                                "& img": { objectFit: "contain", p: "2px" },
+                              }}
+                            >
+                              {!match.home_club_logo &&
+                                match.home_club_name?.charAt(0)}
+                            </Avatar>
+                            <Typography
+                              variant="body2"
+                              fontWeight="700"
+                              color="black"
+                            >
+                              {match.home_club_name}
+                            </Typography>
+                          </Box>
                           <Typography
                             variant="body2"
+                            color="text.secondary"
                             fontWeight="800"
-                            color="black"
+                            sx={{ mx: 0.5 }}
                           >
-                            {match.score_home}
+                            vs
                           </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            :
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            fontWeight="800"
-                            color="black"
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
                           >
-                            {match.score_away}
-                          </Typography>
+                            <Avatar
+                              src={match.away_club_logo || undefined}
+                              variant="rounded"
+                              sx={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: "8px",
+                                bgcolor: "rgba(0,0,0,0.05)",
+                                "& img": { objectFit: "contain", p: "2px" },
+                              }}
+                            >
+                              {!match.away_club_logo &&
+                                match.away_club_name?.charAt(0)}
+                            </Avatar>
+                            <Typography
+                              variant="body2"
+                              fontWeight="700"
+                              color="black"
+                            >
+                              {match.away_club_name}
+                            </Typography>
+                          </Box>
                         </Box>
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          -
+                      </TableCell>
+
+                      {/* Score */}
+                      <TableCell>
+                        {isMatchFinished(match) ? (
+                          <Box
+                            sx={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              bgcolor: "rgba(0,0,0,0.04)",
+                              borderRadius: "8px",
+                              px: 1.5,
+                              py: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              fontWeight="800"
+                              color="black"
+                            >
+                              {match.score_home}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              :
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              fontWeight="800"
+                              color="black"
+                            >
+                              {match.score_away}
+                            </Typography>
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            -
+                          </Typography>
+                        )}
+                      </TableCell>
+
+                      <TableCell>
+                        <Typography variant="body2" color="black">
+                          {formatDate(match.match_date)}
                         </Typography>
-                      )}
-                    </TableCell>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {formatTime(match.match_time)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {match.venue || "-"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {match.remark || "-"}
+                        </Typography>
+                      </TableCell>
 
-                    <TableCell>
-                      <Typography variant="body2" color="black">
-                        {formatDate(match.match_date)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="text.secondary">
-                        {formatTime(match.match_time)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" color="text.secondary">
-                        {match.venue || "-"}
-                      </Typography>
-                    </TableCell>
+                      {/* Result */}
+                      <TableCell>
+                        {match.result ? (
+                          <Chip
+                            label={
+                              match.result === "win"
+                                ? "WIN"
+                                : match.result === "lose"
+                                  ? "LOSE"
+                                  : "DRAW"
+                            }
+                            size="small"
+                            sx={{
+                              fontWeight: 900,
+                              borderRadius: "6px",
+                              bgcolor:
+                                match.result === "win"
+                                  ? "#22c55e"
+                                  : match.result === "lose"
+                                    ? "#ef4444"
+                                    : "#f59e0b",
+                              color: "white",
+                              width: "60px",
+                            }}
+                          />
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            -
+                          </Typography>
+                        )}
+                      </TableCell>
 
-                    {/* Status badge */}
-                    <TableCell>
-                      <Chip
-                        label={isMatchFinished(match) ? "Selesai" : "Upcoming"}
-                        color={isMatchFinished(match) ? "success" : "warning"}
-                        variant="outlined"
-                        size="small"
-                        icon={
-                          isMatchFinished(match) ? (
-                            <EmojiEventsIcon />
-                          ) : undefined
-                        }
-                        sx={{ fontWeight: "700", borderRadius: "8px" }}
-                      />
-                    </TableCell>
+                      {/* Status badge */}
+                      <TableCell>
+                        <Chip
+                          label={
+                            isMatchFinished(match) ? "Selesai" : "Upcoming"
+                          }
+                          color={isMatchFinished(match) ? "success" : "warning"}
+                          variant="outlined"
+                          size="small"
+                          icon={
+                            isMatchFinished(match) ? (
+                              <EmojiEventsIcon />
+                            ) : undefined
+                          }
+                          sx={{ fontWeight: "700", borderRadius: "8px" }}
+                        />
+                      </TableCell>
 
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleOpenDialog(match)}
-                        sx={{
-                          mr: 1,
-                          "&:hover": {
-                            bgcolor: "primary.light",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleDelete(match.id)}
-                        sx={{
-                          "&:hover": { bgcolor: "error.light", color: "white" },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenDialog(match)}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              bgcolor: "primary.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDelete(match.id)}
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "error.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredMatches.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.05)",
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "start",
+              },
+              "& .MuiTablePagination-spacer": {
+                display: "none",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+                {
+                  fontWeight: "600",
+                  color: "black",
+                  margin: "0 8px",
+                },
+              "& .MuiTablePagination-actions": {
+                color: "black",
+                marginLeft: 0,
+              },
+            }}
+          />
         </TableContainer>
       )}
 
@@ -602,16 +948,27 @@ export default function MatchManagementPage() {
               />
             </Box>
 
-            {/* Venue */}
-            <TextField
-              label="Venue / Alamat"
-              fullWidth
-              value={selectedMatch.venue}
-              onChange={(e) =>
-                setSelectedMatch({ ...selectedMatch, venue: e.target.value })
-              }
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
-            />
+            {/* Venue & Remark */}
+            <Box display="flex" gap={2}>
+              <TextField
+                label="Venue / Alamat"
+                fullWidth
+                value={selectedMatch.venue}
+                onChange={(e) =>
+                  setSelectedMatch({ ...selectedMatch, venue: e.target.value })
+                }
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
+              />
+              <TextField
+                label="Remark (Final, Liga, etc)"
+                fullWidth
+                value={selectedMatch.remark}
+                onChange={(e) =>
+                  setSelectedMatch({ ...selectedMatch, remark: e.target.value })
+                }
+                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
+              />
+            </Box>
 
             {/* Score (optional — fill only if match is done) */}
             <Box>
@@ -661,6 +1018,25 @@ export default function MatchManagementPage() {
                 />
               </Box>
             </Box>
+
+            <TextField
+              select
+              label="Hasil Akhir (Relatif ke Tim Kita)"
+              fullWidth
+              value={selectedMatch.result}
+              onChange={(e) =>
+                setSelectedMatch({
+                  ...selectedMatch,
+                  result: e.target.value,
+                })
+              }
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
+            >
+              <MenuItem value="">Belum Ada Hasil</MenuItem>
+              <MenuItem value="win">MENANG (WIN)</MenuItem>
+              <MenuItem value="lose">KALAH (LOSE)</MenuItem>
+              <MenuItem value="draw">SERI (DRAW)</MenuItem>
+            </TextField>
           </Box>
         </DialogContent>
 
@@ -671,6 +1047,10 @@ export default function MatchManagementPage() {
           <Button
             variant="contained"
             onClick={handleSave}
+            disabled={saving}
+            startIcon={
+              saving ? <CircularProgress size={20} color="inherit" /> : null
+            }
             sx={{
               borderRadius: "10px",
               textTransform: "none",
@@ -678,7 +1058,7 @@ export default function MatchManagementPage() {
               px: 3,
             }}
           >
-            {isEditing ? "Save Changes" : "Add Match"}
+            {saving ? "Saving..." : isEditing ? "Save Changes" : "Add Match"}
           </Button>
         </DialogActions>
       </Dialog>

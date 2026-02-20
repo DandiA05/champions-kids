@@ -1,9 +1,11 @@
 import LogoSlide from "@/components/logo-slide";
+import Link from "next/link";
 import { sql } from "@/lib/db";
 import { notFound } from "next/navigation";
 import PlayerStatBar from "@/components/player-single/PlayerStatBar";
 import PlayerRadarChart from "@/components/player-single/player-radar-chart";
 import { POSITIONS } from "@/lib/constants";
+import { getPositionColor } from "@/lib/player-helpers";
 
 export default async function PlayerPage(props: {
   params: Promise<{ id: string }>;
@@ -37,18 +39,6 @@ export default async function PlayerPage(props: {
       6,
   );
 
-  const getPositionColor = (pos: string) => {
-    const attackers = ["ST", "CF", "LW", "RW"];
-    const midfielders = ["CM", "AM", "DM"];
-    const defenders = ["CB", "LB", "RB"];
-
-    if (attackers.includes(pos)) return "#d32f2f"; // Red
-    if (midfielders.includes(pos)) return "#2e7d32"; // Green
-    if (defenders.includes(pos)) return "#0288d1"; // Blue
-    if (pos === "GK") return "#ed6c02"; // Gold/Orange
-    return "var(--pgs_secondary_color)";
-  };
-
   // Calculate Age (simple)
   let age = "N/A";
   if (player.birthday) {
@@ -69,6 +59,22 @@ export default async function PlayerPage(props: {
       {/* Player Detail */}
       <section className="space-ptb single-player">
         <div className="container">
+          <div className="row mb-4">
+            <div className="col-12 text-start">
+              <Link
+                href="/team"
+                className="btn btn-sm btn-outline-light text-white d-inline-flex align-items-center gap-2"
+                style={{
+                  borderRadius: "20px",
+                  padding: "8px 20px",
+                  fontSize: "0.9rem",
+                }}
+              >
+                <i className="fas fa-arrow-left"></i>
+                Back to Team
+              </Link>
+            </div>
+          </div>
           <div className="row align-items-center">
             <div className="col-lg-5">
               <div className="player-img">

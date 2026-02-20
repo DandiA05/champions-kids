@@ -21,6 +21,10 @@ import {
   Avatar,
   CircularProgress,
   Alert,
+  FormControlLabel,
+  Checkbox,
+  Chip,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,19 +39,34 @@ interface Club {
   id: number;
   name: string;
   logo_url: string | null;
+  is_our_team: boolean;
   created_at: string;
 }
 
-const initialState = { name: "", logo_url: "" };
+interface ClubFormState {
+  id?: number;
+  name: string;
+  logo_url: string;
+  is_our_team: boolean;
+}
+
+const initialState: ClubFormState = {
+  name: "",
+  logo_url: "",
+  is_our_team: false,
+};
 
 export default function ClubManagementPage() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedClub, setSelectedClub] = useState<any>(initialState);
+  const [selectedClub, setSelectedClub] = useState<ClubFormState>(initialState);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const fetchData = async () => {
     setLoading(true);
@@ -73,6 +92,7 @@ export default function ClubManagementPage() {
       setSelectedClub({
         name: club.name,
         logo_url: club.logo_url || "",
+        is_our_team: club.is_our_team || false,
         id: club.id,
       });
     } else {
@@ -94,6 +114,7 @@ export default function ClubManagementPage() {
       setError("Club name is required");
       return;
     }
+    setSaving(true);
     try {
       const url = isEditing
         ? `/api/admin/clubs/${selectedClub.id}`
@@ -106,6 +127,7 @@ export default function ClubManagementPage() {
         body: JSON.stringify({
           name: selectedClub.name,
           logo_url: selectedClub.logo_url,
+          is_our_team: selectedClub.is_our_team,
         }),
       });
       const data = await res.json();
@@ -118,6 +140,8 @@ export default function ClubManagementPage() {
       }
     } catch {
       setError("An error occurred while saving");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -130,6 +154,17 @@ export default function ClubManagementPage() {
     } catch {
       alert("Error deleting club");
     }
+  };
+
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handleUploadSuccess = (result: CloudinaryUploadWidgetResults) => {
@@ -203,7 +238,7 @@ export default function ClubManagementPage() {
           <Table>
             <TableHead sx={{ bgcolor: "#fafafa" }}>
               <TableRow>
-                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>#</TableCell>
+                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>No.</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Logo</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Club Name</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Created</TableCell>
@@ -224,79 +259,130 @@ export default function ClubManagementPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                clubs.map((club, idx) => (
-                  <TableRow
-                    key={club.id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell
-                      sx={{ color: "text.secondary", fontWeight: 600 }}
+                clubs
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((club, idx) => (
+                    <TableRow
+                      key={club.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      {idx + 1}
-                    </TableCell>
-                    <TableCell>
-                      <Avatar
-                        src={club.logo_url || undefined}
-                        variant="rounded"
-                        sx={{
-                          width: 48,
-                          height: 48,
-                          borderRadius: "10px",
-                          bgcolor: "rgba(0,0,0,0.05)",
-                          "& img": { objectFit: "contain", p: "4px" },
-                        }}
+                      <TableCell
+                        sx={{ color: "text.secondary", fontWeight: 600 }}
                       >
-                        {!club.logo_url && club.name.charAt(0).toUpperCase()}
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <Typography
-                        variant="body2"
-                        fontWeight="700"
-                        color="black"
-                      >
-                        {club.name}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(club.created_at).toLocaleDateString("id-ID", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleOpenDialog(club)}
-                        sx={{
-                          mr: 1,
-                          "&:hover": {
-                            bgcolor: "primary.light",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleDelete(club.id)}
-                        sx={{
-                          "&:hover": { bgcolor: "error.light", color: "white" },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
+                        {page * rowsPerPage + idx + 1}.
+                      </TableCell>
+                      <TableCell>
+                        <Avatar
+                          src={club.logo_url || undefined}
+                          variant="rounded"
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: "10px",
+                            bgcolor: "rgba(0,0,0,0.05)",
+                            "& img": { objectFit: "contain", p: "4px" },
+                          }}
+                        >
+                          {!club.logo_url && club.name.charAt(0).toUpperCase()}
+                        </Avatar>
+                      </TableCell>
+                      <TableCell>
+                        <Box display="flex" alignItems="center" gap={1}>
+                          <Typography
+                            variant="body2"
+                            fontWeight="700"
+                            color="black"
+                          >
+                            {club.name}
+                          </Typography>
+                          {club.is_our_team && (
+                            <Chip
+                              label="Our Team"
+                              size="small"
+                              color="primary"
+                              sx={{
+                                fontSize: "10px",
+                                height: "18px",
+                                fontWeight: 800,
+                                borderRadius: "4px",
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(club.created_at).toLocaleDateString(
+                            "id-ID",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            },
+                          )}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenDialog(club)}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              bgcolor: "primary.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDelete(club.id)}
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "error.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={clubs.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.05)",
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "start", // Matches User Management
+              },
+              "& .MuiTablePagination-spacer": {
+                display: "none",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+                {
+                  fontWeight: "600",
+                  color: "black",
+                  margin: "0 8px",
+                },
+              "& .MuiTablePagination-actions": {
+                color: "black",
+                marginLeft: 0,
+              },
+            }}
+          />
         </TableContainer>
       )}
 
@@ -390,6 +476,21 @@ export default function ClubManagementPage() {
               }
               sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
             />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={selectedClub.is_our_team}
+                  onChange={(e) =>
+                    setSelectedClub({
+                      ...selectedClub,
+                      is_our_team: e.target.checked,
+                    })
+                  }
+                />
+              }
+              label="Centang jika ini adalah Tim Kita (Our Team)"
+            />
           </Box>
         </DialogContent>
 
@@ -400,6 +501,10 @@ export default function ClubManagementPage() {
           <Button
             variant="contained"
             onClick={handleSave}
+            disabled={saving}
+            startIcon={
+              saving ? <CircularProgress size={20} color="inherit" /> : null
+            }
             sx={{
               borderRadius: "10px",
               textTransform: "none",
@@ -407,7 +512,7 @@ export default function ClubManagementPage() {
               px: 3,
             }}
           >
-            {isEditing ? "Save Changes" : "Add Club"}
+            {saving ? "Saving..." : isEditing ? "Save Changes" : "Add Club"}
           </Button>
         </DialogActions>
       </Dialog>

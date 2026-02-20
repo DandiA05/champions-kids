@@ -27,6 +27,7 @@ import {
   Divider,
   Chip,
   DialogContentText,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -134,6 +135,8 @@ export default function PlayerManagementPage() {
   // Dialog State
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selectedPlayer, setSelectedPlayer] = useState<any>(initialPlayerState);
   const [tabValue, setTabValue] = useState(0);
@@ -254,6 +257,17 @@ export default function PlayerManagementPage() {
     setOpenDialog(false);
     setSelectedPlayer(initialPlayerState);
     setError(null);
+  };
+
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -616,10 +630,12 @@ export default function PlayerManagementPage() {
           <Table>
             <TableHead sx={{ bgcolor: "#fafafa" }}>
               <TableRow>
+                <TableCell sx={{ fontWeight: "700", py: 2.5 }}>No.</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Photo</TableCell>
                 <TableCell sx={{ fontWeight: "700", py: 2.5 }}>
                   Player
                 </TableCell>
-                <TableCell sx={{ fontWeight: "700" }}>No</TableCell>
+                <TableCell sx={{ fontWeight: "700" }}>Jersey No</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Age Category</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Position</TableCell>
                 <TableCell sx={{ fontWeight: "700" }}>Top</TableCell>
@@ -631,197 +647,240 @@ export default function PlayerManagementPage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredAndSortedPlayers.map((player) => (
-                <TableRow
-                  key={player.id}
-                  hover
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      {player.photo_url ? (
-                        <Box
-                          onClick={() => {
-                            setPreviewImageUrl(player.photo_url);
-                            setPreviewImageOpen(true);
-                          }}
-                          sx={{
-                            cursor: "zoom-in",
-                            transition: "all 0.2s",
-                            "&:hover": {
-                              transform: "scale(1.1)",
-                              filter: "brightness(0.9)",
-                            },
-                          }}
-                        >
+              {filteredAndSortedPlayers.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={10}
+                    align="center"
+                    sx={{ py: 6, color: "text.secondary" }}
+                  >
+                    No players found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredAndSortedPlayers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((player, index) => (
+                    <TableRow
+                      key={player.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
+                      <TableCell>
+                        {player.photo_url ? (
+                          <Box
+                            onClick={() => {
+                              setPreviewImageUrl(player.photo_url);
+                              setPreviewImageOpen(true);
+                            }}
+                            sx={{
+                              cursor: "zoom-in",
+                              transition: "all 0.2s",
+                              "&:hover": {
+                                transform: "scale(1.1)",
+                                filter: "brightness(0.9)",
+                              },
+                            }}
+                          >
+                            <Avatar
+                              src={player.photo_url}
+                              variant="rounded"
+                              sx={{
+                                width: 48,
+                                height: 64, // 3:4 ratio (48/64 = 0.75)
+                                borderRadius: "8px",
+                                bgcolor: "#fff",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                "& img": {
+                                  objectFit: "cover",
+                                },
+                              }}
+                            />
+                          </Box>
+                        ) : (
                           <Avatar
-                            src={player.photo_url}
                             variant="rounded"
                             sx={{
                               width: 48,
-                              height: 64, // 3:4 ratio (48/64 = 0.75)
+                              height: 64,
                               borderRadius: "8px",
-                              bgcolor: "#fff",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                              "& img": {
-                                objectFit: "cover",
-                              },
+                              bgcolor: "rgba(0,0,0,0.05)",
                             }}
                           />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+                          <Box>
+                            <Typography
+                              variant="body2"
+                              fontWeight="700"
+                              color="black"
+                            >
+                              {player.user_name || "Unknown"}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="textSecondary"
+                              display="block"
+                            >
+                              {player.user_email}
+                            </Typography>
+                          </Box>
                         </Box>
-                      ) : (
-                        <Avatar
-                          variant="rounded"
-                          sx={{
-                            width: 50,
-                            height: 50,
-                            borderRadius: "12px",
-                            bgcolor: "rgba(0,0,0,0.05)",
-                          }}
-                        />
-                      )}
-                      <Box>
+                      </TableCell>
+                      <TableCell>
                         <Typography
                           variant="body2"
                           fontWeight="700"
-                          color="black"
+                          color="primary"
                         >
-                          {player.user_name || "Unknown"}
+                          #{player.jersey_number || "0"}
                         </Typography>
-                        <Typography
-                          variant="caption"
-                          color="textSecondary"
-                          display="block"
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "inline-block",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "8px",
+                            bgcolor: "primary.main",
+                            color: "white",
+                            fontSize: "0.75rem",
+                            fontWeight: "700",
+                          }}
                         >
-                          {player.user_email}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      fontWeight="700"
-                      color="primary"
-                    >
-                      #{player.jersey_number || "0"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        display: "inline-block",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: "8px",
-                        bgcolor: "primary.main",
-                        color: "white",
-                        fontSize: "0.75rem",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {player.age_category || "N/A"}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        display: "inline-block",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: "8px",
-                        bgcolor: getPositionColor(player.position),
-                        color: player.position ? "white" : "inherit",
-                        fontSize: "0.75rem",
-                        fontWeight: "700",
-                      }}
-                    >
-                      {player.position || "N/A"}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    {player.is_top_player ? (
-                      <StarIcon sx={{ color: "#ffc107" }} />
-                    ) : (
-                      <StarBorderIcon sx={{ color: "rgba(0,0,0,0.1)" }} />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: 40,
-                        height: 40,
-                        borderRadius: "10px",
-                        bgcolor: "rgba(0,0,0,0.04)",
-                        fontWeight: "800",
-                        fontSize: "1.1rem",
-                        color: "primary.main",
-                        border: "2px solid",
-                        borderColor: "primary.light",
-                      }}
-                    >
-                      {calculateOVR(player)}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={player.is_active ? "Active" : "Inactive"}
-                      color={player.is_active ? "success" : "error"}
-                      variant="outlined"
-                      size="small"
-                      onClick={() => handleToggleStatusClick(player)}
-                      sx={{
-                        fontWeight: "700",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        "&:hover": {
-                          bgcolor: player.is_active
-                            ? "success.light"
-                            : "error.light",
-                          opacity: 0.8,
-                        },
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenDialog(player)}
-                      sx={{
-                        mr: 1,
-                        "&:hover": { bgcolor: "primary.light", color: "white" },
-                      }}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => handleDelete(player.id)}
-                      sx={{
-                        "&:hover": { bgcolor: "error.light", color: "white" },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {players.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 8 }}>
-                    <Typography variant="body1" color="textSecondary">
-                      No players found. Add users with role &apos;player&apos;
-                      first.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
+                          {player.age_category || "N/A"}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "inline-block",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "8px",
+                            bgcolor: getPositionColor(player.position),
+                            color: player.position ? "white" : "inherit",
+                            fontSize: "0.75rem",
+                            fontWeight: "700",
+                          }}
+                        >
+                          {player.position || "N/A"}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        {player.is_top_player ? (
+                          <StarIcon sx={{ color: "#ffc107" }} />
+                        ) : (
+                          <StarBorderIcon sx={{ color: "rgba(0,0,0,0.1)" }} />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 40,
+                            height: 40,
+                            borderRadius: "10px",
+                            bgcolor: "rgba(0,0,0,0.04)",
+                            fontWeight: "800",
+                            fontSize: "1.1rem",
+                            color: "primary.main",
+                            border: "2px solid",
+                            borderColor: "primary.light",
+                          }}
+                        >
+                          {calculateOVR(player)}
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={player.is_active ? "Active" : "Inactive"}
+                          color={player.is_active ? "success" : "error"}
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleToggleStatusClick(player)}
+                          sx={{
+                            fontWeight: "700",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            "&:hover": {
+                              bgcolor: player.is_active
+                                ? "success.light"
+                                : "error.light",
+                              opacity: 0.8,
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenDialog(player)}
+                          sx={{
+                            mr: 1,
+                            "&:hover": {
+                              bgcolor: "primary.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(player.id)}
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "error.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredAndSortedPlayers.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            sx={{
+              borderTop: "1px solid rgba(0,0,0,0.05)",
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "start",
+              },
+              "& .MuiTablePagination-spacer": {
+                display: "none",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows, & .MuiTablePagination-select":
+                {
+                  fontWeight: "600",
+                  color: "black",
+                  margin: "0 8px",
+                },
+              "& .MuiTablePagination-actions": {
+                color: "black",
+                marginLeft: 0,
+              },
+            }}
+          />
         </TableContainer>
       )}
 

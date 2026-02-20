@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { getPositionColor } from "@/lib/player-helpers";
 import Link from "next/link";
 
 export default async function TopPlayers() {
@@ -48,20 +49,22 @@ export default async function TopPlayers() {
             >
               {players.map((player: any) => (
                 <div className="item mb-4 mb-lg-0" key={player.id}>
-                  <div className="player">
-                    <img
-                      className="img-fluid"
-                      src={player.photo_url || "/images/home-01/team-01.jpg"}
-                      alt={player.user_name}
-                      style={{
-                        width: "100%",
-                        aspectRatio: "3 / 4",
-                        objectFit: "cover",
-                        backgroundColor: "white",
-                        display: "block",
-                      }}
-                    />
-                  </div>
+                  <Link href={`/players/${player.id}`}>
+                    <div className="player">
+                      <img
+                        className="img-fluid"
+                        src={player.photo_url || "/images/home-01/team-01.jpg"}
+                        alt={player.user_name}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "3 / 4",
+                          objectFit: "cover",
+                          backgroundColor: "white",
+                          display: "block",
+                        }}
+                      />
+                    </div>
+                  </Link>
                   <div className="player-info">
                     <span className="player-number">
                       {player.jersey_number || "00"}
@@ -72,9 +75,25 @@ export default async function TopPlayers() {
                           {player.user_name}
                         </Link>
                       </h3>
-                      <span className="text-uppercase text-primary">
-                        {player.position}
-                      </span>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span
+                          className="badge text-white px-4 py-2"
+                          style={{
+                            fontSize: "0.7rem",
+                            borderRadius: "30px",
+                            letterSpacing: "1px",
+                            backgroundColor: getPositionColor(player.position),
+                          }}
+                        >
+                          {player.position?.toUpperCase()}
+                        </span>
+                        <span
+                          className="badge bg-dark"
+                          style={{ fontSize: "0.7rem", opacity: 0.8 }}
+                        >
+                          {player.age_category}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

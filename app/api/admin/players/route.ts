@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { verifyUserFromCookies, isAdmin } from "@/lib/auth";
@@ -106,6 +107,10 @@ export async function POST(request: Request) {
       )
       RETURNING *
     `;
+
+    // Revalidate relevant paths
+    revalidatePath("/");
+    revalidatePath("/team");
 
     return NextResponse.json({ player: newPlayer[0] }, { status: 201 });
   } catch (error) {
