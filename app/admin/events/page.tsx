@@ -189,7 +189,12 @@ export default function EventManagementPage() {
         banner_url: event.banner_url || "",
         description: event.description || "",
         event_date: event.event_date
-          ? new Date(event.event_date).toISOString().split("T")[0]
+          ? new Date(
+              new Date(event.event_date).getTime() -
+                new Date(event.event_date).getTimezoneOffset() * 60000,
+            )
+              .toISOString()
+              .split("T")[0]
           : "",
         documentation_urls: event.documentation_urls || [],
       });
@@ -199,7 +204,11 @@ export default function EventManagementPage() {
         title: "",
         banner_url: "",
         description: "",
-        event_date: new Date().toISOString().split("T")[0],
+        event_date: new Date(
+          new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .split("T")[0],
         documentation_urls: [],
       });
     }

@@ -86,8 +86,8 @@ export default async function LatestResults() {
               className="text-white"
               style={{ fontSize: "3.5rem", fontWeight: "800" }}
             >
-              <span>{String(match.score_home).padStart(2, "0")}</span> :{" "}
-              <span>{String(match.score_away).padStart(2, "0")}</span>
+              <span>{String(match.score_home).padStart(1, "0")}</span> -{" "}
+              <span>{String(match.score_away).padStart(1, "0")}</span>
             </h2>
             <div className="time-location mt-3">
               <span className="time text-white mx-3">
