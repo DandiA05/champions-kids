@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Button,
@@ -27,9 +27,11 @@ import {
   DialogContentText,
   IconButton,
   TablePagination,
+  InputAdornment,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
+import SearchIcon from "@mui/icons-material/Search";
 
 interface User {
   id: number;
@@ -54,6 +56,7 @@ export default function UserManagement() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -83,6 +86,16 @@ export default function UserManagement() {
       setLoading(false);
     }
   };
+
+  const filteredUsers = useMemo(() => {
+    return users.filter((user) => {
+      const search = searchQuery.toLowerCase();
+      return (
+        user.name.toLowerCase().includes(search) ||
+        user.email.toLowerCase().includes(search)
+      );
+    });
+  }, [users, searchQuery]);
 
   const handleOpenDialog = (user?: User) => {
     if (user) {
@@ -255,6 +268,40 @@ export default function UserManagement() {
         </Button>
       </Box>
 
+      {/* Search Filter */}
+      <Box mb={4}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Search by name or email..."
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setPage(0);
+          }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon color="action" />
+              </InputAdornment>
+            ),
+            sx: {
+              borderRadius: "15px",
+              bgcolor: "white",
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(0,0,0,0.1)",
+              },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "rgba(0,0,0,0.2)",
+              },
+              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                borderWidth: "2px",
+              },
+            },
+          }}
+        />
+      </Box>
+
       {error && (
         <Alert
           severity="error"
@@ -313,73 +360,85 @@ export default function UserManagement() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((user, index) => (
-                  <TableRow
-                    key={user.id}
-                    hover
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
-                    {/* <TableCell>{user.id}</TableCell> */}
-                    <TableCell sx={{ fontWeight: "600" }}>
-                      {user.name}
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.role}
-                        color={user.role === "admin" ? "primary" : "default"}
-                        size="small"
-                        sx={{ fontWeight: "700", borderRadius: "8px" }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={user.is_active ? "Active" : "Inactive"}
-                        color={user.is_active ? "success" : "error"}
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleToggleStatusClick(user)}
-                        sx={{
-                          fontWeight: "700",
-                          borderRadius: "8px",
-                          cursor: "pointer",
-                          "&:hover": {
-                            bgcolor: user.is_active
-                              ? "success.light"
-                              : "error.light",
-                            opacity: 0.8,
-                          },
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell sx={{ color: "textSecondary" }}>
-                      {formatDate(user.created_at)}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={() => handleOpenDialog(user)}
-                        sx={{
-                          "&:hover": {
-                            bgcolor: "primary.light",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                    <Typography color="textSecondary" variant="subtitle1">
+                      {searchQuery
+                        ? `No users found matching "${searchQuery}"`
+                        : "No users available"}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredUsers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((user, index) => (
+                    <TableRow
+                      key={user.id}
+                      hover
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell>{page * rowsPerPage + index + 1}.</TableCell>
+                      {/* <TableCell>{user.id}</TableCell> */}
+                      <TableCell sx={{ fontWeight: "600" }}>
+                        {user.name}
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.role}
+                          color={user.role === "admin" ? "primary" : "default"}
+                          size="small"
+                          sx={{ fontWeight: "700", borderRadius: "8px" }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={user.is_active ? "Active" : "Inactive"}
+                          color={user.is_active ? "success" : "error"}
+                          variant="outlined"
+                          size="small"
+                          onClick={() => handleToggleStatusClick(user)}
+                          sx={{
+                            fontWeight: "700",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            "&:hover": {
+                              bgcolor: user.is_active
+                                ? "success.light"
+                                : "error.light",
+                              opacity: 0.8,
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell sx={{ color: "textSecondary" }}>
+                        {formatDate(user.created_at)}
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          size="small"
+                          onClick={() => handleOpenDialog(user)}
+                          sx={{
+                            "&:hover": {
+                              bgcolor: "primary.light",
+                              color: "white",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+              )}
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, 50, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={users.length}
+            count={filteredUsers.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handlePageChange}

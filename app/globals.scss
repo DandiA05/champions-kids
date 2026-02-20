@@ -11,6 +11,15 @@
   flex-basis: auto !important;
 }
 
+.header-position {
+  @media (max-width: 1199px) {
+    padding-top: 80px !important;
+  }
+  @media (max-width: 767px) {
+    padding-top: 90px !important;
+  }
+}
+
 @media (max-width: 1199.98px) {
   .navbar-collapse.collapse:not(.show) {
     display: none !important;

@@ -28,6 +28,7 @@ import {
   Chip,
   DialogContentText,
   TablePagination,
+  InputAdornment,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -35,6 +36,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   CldUploadWidget,
   CloudinaryUploadWidgetResults,
@@ -154,6 +156,8 @@ export default function PlayerManagementPage() {
   const [filterAgeCategory, setFilterAgeCategory] = useState<string>("all");
   const [filterPosition, setFilterPosition] = useState<string>("all");
   const [filterTopPlayer, setFilterTopPlayer] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch Data
   const fetchData = async () => {
@@ -196,7 +200,20 @@ export default function PlayerManagementPage() {
           filterTopPlayer === "all" ||
           (filterTopPlayer === "yes" && player.is_top_player) ||
           (filterTopPlayer === "no" && !player.is_top_player);
-        return matchAge && matchPosition && matchTop;
+
+        const search = searchQuery.toLowerCase();
+        const matchSearch =
+          (player.user_name || "").toLowerCase().includes(search) ||
+          (player.user_email || "").toLowerCase().includes(search);
+
+        const matchStatus =
+          filterStatus === "all" ||
+          (filterStatus === "active" && player.is_active) ||
+          (filterStatus === "inactive" && !player.is_active);
+
+        return (
+          matchAge && matchPosition && matchTop && matchSearch && matchStatus
+        );
       })
       .sort((a, b) => {
         let valA: string | number;
@@ -228,6 +245,8 @@ export default function PlayerManagementPage() {
     filterAgeCategory,
     filterPosition,
     filterTopPlayer,
+    filterStatus,
+    searchQuery,
   ]);
 
   useEffect(() => {
@@ -475,8 +494,8 @@ export default function PlayerManagementPage() {
               />
               Sorting Options
             </Typography>
-            <div className="d-flex flex-wrap gap-4">
-              <div style={{ minWidth: "200px", flex: 1 }}>
+            <div className="d-flex flex-wrap gap-4 align-items-center">
+              <div style={{ minWidth: "180px", flex: 1 }}>
                 <TextField
                   select
                   label="Sort By"
@@ -508,7 +527,7 @@ export default function PlayerManagementPage() {
                   <MenuItem value="desc">Descending</MenuItem>
                 </TextField>
               </div>
-              <div style={{ flex: 2 }} /> {/* Spacer */}
+              <div style={{ flex: 2 }} />
             </div>
           </Box>
 
@@ -533,7 +552,28 @@ export default function PlayerManagementPage() {
               />
               Filter Players
             </Typography>
-            <div className="d-flex flex-wrap gap-4">
+            <div className="d-flex flex-wrap gap-4 align-items-end">
+              <div style={{ minWidth: "250px", flex: 2 }}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  placeholder="Search player name or email..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(0);
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon color="action" fontSize="small" />
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: "10px", bgcolor: "white" },
+                  }}
+                />
+              </div>
               <div style={{ minWidth: "180px", flex: 1 }}>
                 <TextField
                   select
@@ -580,9 +620,31 @@ export default function PlayerManagementPage() {
                   onChange={(e) => setFilterTopPlayer(e.target.value)}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: "10px" } }}
                 >
-                  <MenuItem value="all">Any Status</MenuItem>
+                  <MenuItem value="all">Any Top Status</MenuItem>
                   <MenuItem value="yes">Top Only (⭐)</MenuItem>
                   <MenuItem value="no">Normal Only</MenuItem>
+                </TextField>
+              </div>
+              <div style={{ minWidth: "150px", flex: 1 }}>
+                <TextField
+                  select
+                  label="Status"
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  value={filterStatus}
+                  onChange={(e) => {
+                    setFilterStatus(e.target.value);
+                    setPage(0);
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": { borderRadius: "10px" },
+                    bgcolor: "white",
+                  }}
+                >
+                  <MenuItem value="all">All Status</MenuItem>
+                  <MenuItem value="active">Active</MenuItem>
+                  <MenuItem value="inactive">Inactive</MenuItem>
                 </TextField>
               </div>
               <Box
@@ -600,6 +662,8 @@ export default function PlayerManagementPage() {
                     setFilterAgeCategory("all");
                     setFilterPosition("all");
                     setFilterTopPlayer("all");
+                    setFilterStatus("all");
+                    setSearchQuery("");
                     setSortBy("created_at");
                     setSortOrder("desc");
                   }}
@@ -649,12 +713,12 @@ export default function PlayerManagementPage() {
             <TableBody>
               {filteredAndSortedPlayers.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={10}
-                    align="center"
-                    sx={{ py: 6, color: "text.secondary" }}
-                  >
-                    No players found.
+                  <TableCell colSpan={10} align="center" sx={{ py: 8 }}>
+                    <Typography color="textSecondary" variant="subtitle1">
+                      {searchQuery
+                        ? `No players found matching "${searchQuery}"`
+                        : "No players available"}
+                    </Typography>
                   </TableCell>
                 </TableRow>
               ) : (
