@@ -8,7 +8,7 @@ export function SiteHeader({ isHomePage = false }: SiteHeaderProps) {
   return (
     <>
       <header
-        className={`header header-sticky default ${
+        className={`header header-sticky default inner-page-header ${
           !isHomePage ? "inner-page-header" : ""
         }`}
       >

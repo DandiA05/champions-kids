@@ -15,9 +15,9 @@ export default function Home() {
               <div className="slider-social-info"></div>
             </div>
           </div>
-          <div className="swiper-wrapper">
+          <div className="swiper-wrapper header-position">
             <div
-              className="swiper-slide align-items-center d-flex slide-01 header-position"
+              className="swiper-slide align-items-center d-flex slide-01 "
               style={{
                 // backgroundImage: "url(/images/home-01/blog-01.jpg)",
                 backgroundColor: "#CD6500",
