@@ -43,9 +43,6 @@ export default function FileTestPage() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [presetName, setPresetName] = useState(
-    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "champions_kids",
-  );
 
   const fetchAssets = async () => {
     setLoading(true);
@@ -129,27 +126,15 @@ export default function FileTestPage() {
 
       <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Box mb={3}>
-            <Typography variant="h6" mb={1}>
-              Configuration
-            </Typography>
-            <TextField
-              fullWidth
-              label="Cloudinary Upload Preset"
-              variant="outlined"
-              value={presetName}
-              onChange={(e) => setPresetName(e.target.value)}
-              helperText="You can find this in your Cloudinary Dashboard under Settings > Upload > Upload presets. It must be an 'Unsigned' preset."
-              placeholder="e.g. ml_default"
-              sx={{ mb: 2 }}
-            />
-          </Box>
           <Divider sx={{ mb: 3 }} />
           <Typography variant="h6" mb={2} color="black">
             Upload New File
           </Typography>
           <CldUploadWidget
-            uploadPreset={presetName}
+            uploadPreset={
+              process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+              "champions_kids"
+            }
             onSuccess={handleUploadSuccess}
             onError={handleUploadError}
           >
