@@ -76,7 +76,10 @@ export default async function Team(props: {
 
       {/* Coaches & Staff Section */}
       {(coaches.length > 0 || otherStaff.length > 0) && (
-        <section className="space-ptb " style={{ paddingBottom: "0px" }}>
+        <section
+          className="space-ptb latest-results"
+          style={{ paddingBottom: "0px" }}
+        >
           <div className="container">
             <div className="row justify-content-center">
               <div className="col-lg-7">
@@ -205,7 +208,7 @@ export default async function Team(props: {
       )}
 
       {/* Our Player */}
-      <section className="space-ptb">
+      <section className="space-ptb about">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-7">
@@ -308,6 +311,13 @@ export default async function Team(props: {
               </div>
             )}
           </div>
+        </div>
+        <div className="about-bg">
+          <img
+            className="img-fluid"
+            src="/images/home-01/pattern-04.png"
+            alt=""
+          />
         </div>
       </section>
 

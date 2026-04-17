@@ -160,7 +160,7 @@ export function SiteHeader({ isHomePage = false }: SiteHeaderProps) {
                       sx={{
                         width: 35,
                         height: 35,
-                        bgcolor: user.role === "admin" ? "#ffcc00" : "#2196f3",
+                        bgcolor: user.role === "admin" ? "#F5A623" : "#2196f3",
                         fontSize: "0.9rem",
                         fontWeight: "bold",
                         color: user.role === "admin" ? "black" : "white",

@@ -27,7 +27,7 @@ export default async function EventDetailPage(props: {
       <section className="space-pt"></section>
 
       {/* Blog Detail */}
-      <section className="space-ptb">
+      <section className="space-ptb about">
         <div className=" px-4 px-md-5">
           <div className="row justify-content-center">
             <div className="col-lg-10 popup-gallery">
@@ -131,6 +131,13 @@ export default async function EventDetailPage(props: {
               </div>
             </div>
           </div>
+        </div>
+        <div className="about-bg">
+          <img
+            className="img-fluid"
+            src="/images/home-01/pattern-04.png"
+            alt=""
+          />
         </div>
       </section>
 

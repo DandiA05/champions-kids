@@ -282,7 +282,7 @@ export default async function PlayerPage(props: {
       </section>
 
       {/* Player Attributes */}
-      <section className="player-attributes space-ptb">
+      <section className="player-attributes bg-type-1 space-ptb">
         <div className="container">
           <div className="row mb-4">
             <div className="col-lg-12 text-center">
@@ -357,7 +357,7 @@ export default async function PlayerPage(props: {
 
       {/* Coach Evaluation & Raport */}
       {(player.coach_notes || player.raport_url) && (
-        <section className="coach-evaluation space-pb mt-5">
+        <section className="coach-evaluation  space-pb mt-5">
           <div className="container">
             <div className="row mb-5">
               <div className="col-lg-12 text-center">

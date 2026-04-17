@@ -26,7 +26,7 @@ export default async function CalendarPage() {
 
       <section className="space-pt"></section>
 
-      <section className="space-ptb">
+      <section className="space-ptb about">
         <div className="container px-xl-5">
           <div className="row justify-content-center">
             <div className="col-12 py-4">
@@ -42,6 +42,13 @@ export default async function CalendarPage() {
               <CalendarView initialSchedules={formattedSchedules} />
             </div>
           </div>
+        </div>
+        <div className="about-bg">
+          <img
+            className="img-fluid"
+            src="/images/home-01/pattern-04.png"
+            alt=""
+          />
         </div>
       </section>
     </main>

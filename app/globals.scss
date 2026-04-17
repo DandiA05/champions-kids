@@ -110,6 +110,30 @@ header.header.header-sticky.is-sticky .navbar .navbar-nav .nav-item .nav-link {
   background-repeat: no-repeat;
 }
 
+.bg-type-4 {
+  padding-bottom: 280px;
+  background-image: 
+    linear-gradient(
+      rgba(11, 60, 93, 0.88),
+      rgba(15, 48, 75, 0.88)
+    ),
+    url(/images/home-01/video-04.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.bg-type-1 {
+  padding-bottom: 280px;
+  background-image: 
+    linear-gradient(
+      rgba(11, 60, 93, 0.88),
+      rgba(15, 48, 75, 0.88)
+    ),
+    url(/images/home-01/blog/01.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 
 // .inner-banner {
 //   background-image:

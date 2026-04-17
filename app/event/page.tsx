@@ -17,7 +17,9 @@ export default async function EventList() {
   return (
     <main>
       {/* Blog List Section */}
-      <section className="space-ptb">
+      <section className="space-pt"></section>
+
+      <section className="space-ptb about">
         <div className="container">
           <div className="row mb-4 mb-md-5">
             <div className="col-12">
@@ -66,6 +68,13 @@ export default async function EventList() {
               </div>
             )}
           </div>
+        </div>
+        <div className="about-bg">
+          <img
+            className="img-fluid"
+            src="/images/home-01/pattern-04.png"
+            alt=""
+          />
         </div>
       </section>
     </main>
