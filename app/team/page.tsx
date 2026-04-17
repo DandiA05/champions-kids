@@ -76,7 +76,7 @@ export default async function Team(props: {
 
       {/* Coaches & Staff Section */}
       {(coaches.length > 0 || otherStaff.length > 0) && (
-        <section className="space-ptb ">
+        <section className="space-ptb " style={{ paddingBottom: "0px" }}>
           <div className="container">
             <div className="row justify-content-center">
               <div className="col-lg-7">

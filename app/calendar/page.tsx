@@ -1,5 +1,3 @@
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import CalendarView from "@/components/calendar-view";
 import { db } from "@/lib/db";
 import "./calendar.css";
@@ -24,7 +22,7 @@ export default async function CalendarPage() {
 
   return (
     <main className="min-h-screen">
-      <SiteHeader isHomePage={false} />
+      {/* <SiteHeader isHomePage={false} /> */}
 
       <section className="space-pt"></section>
 
@@ -46,8 +44,6 @@ export default async function CalendarPage() {
           </div>
         </div>
       </section>
-
-      <SiteFooter />
     </main>
   );
 }

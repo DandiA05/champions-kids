@@ -226,7 +226,7 @@ a:focus, a:hover {
   top: 50%;
   width: 4px;
   height: 80%;
-  background: #ffcc00;
+  background: #F5A623;
   transform: translateY(-50%) skewX(-15deg);
 }
 
@@ -240,7 +240,7 @@ a:focus, a:hover {
 }
 .staff-card:hover {
   transform: translateY(-5px);
-  border-bottom-color: #ffcc00;
+  border-bottom-color: #F5A623;
 }
 
 .staff-image-wrapper {
@@ -266,7 +266,7 @@ a:focus, a:hover {
   position: absolute;
   top: -15px;
   right: 20px;
-  background: #ffcc00;
+  background: #F5A623;
   color: black;
   padding: 4px 12px;
   font-weight: 900;
@@ -327,4 +327,4 @@ a:focus, a:hover {
   text-transform: uppercase;
   border-radius: 0;
   transform: skewX(-15deg);
-}
+}
