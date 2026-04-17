@@ -222,7 +222,7 @@ export function SiteHeader({ isHomePage = false }: SiteHeaderProps) {
                       <MenuItem
                         onClick={() => {
                           handleMenuClose();
-                          router.push("/admin/dashboard");
+                          router.push("/admin");
                         }}
                         sx={{ borderRadius: "8px", py: 1 }}
                       >
