@@ -50,35 +50,30 @@ export default async function TopPlayers() {
               {players.map((player: any) => (
                 <div className="item mb-4 mb-lg-0" key={player.id}>
                   <div className="player-card-sporty">
-                    <Link href={`/players/${player.id}`}>
-                      <div className="player-img-container">
-                        <div className="jersey-number-overlay">
-                          {player.jersey_number || "00"}
-                        </div>
-                        <img
-                          className="img-fluid"
-                          src={player.photo_url || "/images/home-01/team-01.jpg"}
-                          alt={player.user_name}
-                          style={{
-                            width: "100%",
-                            aspectRatio: "3 / 4",
-                            objectFit: "cover",
-                            display: "block",
-                            position: "relative",
-                            zIndex: 1,
-                          }}
-                        />
+                    <div className="player-img-container">
+                      <div className="jersey-number-overlay">
+                        {player.jersey_number || "00"}
                       </div>
-                    </Link>
+                      <img
+                        className="img-fluid"
+                        src={player.photo_url || "/images/home-01/team-01.jpg"}
+                        alt={player.user_name}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "3 / 4",
+                          objectFit: "cover",
+                          display: "block",
+                          position: "relative",
+                          zIndex: 1,
+                        }}
+                      />
+                    </div>
                     <div className="player-meta">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <h4 className="player-name-sporty mb-0">
-                          <Link
-                            href={`/players/${player.id}`}
-                            className="text-dark text-decoration-none"
-                          >
+                          <div className="text-dark text-decoration-none">
                             {player.user_name}
-                          </Link>
+                          </div>
                         </h4>
                         <span
                           className="fw-black italic text-muted"

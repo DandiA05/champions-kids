@@ -62,6 +62,50 @@ export default function ClubManagementPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Tracking uploaded assets that might need to be deleted if cancelled
+  const [newlyUploadedAssets, setNewlyUploadedAssets] = useState<
+    { publicId: string; resourceType: string }[]
+  >([]);
+  const [originalAssetUrls, setOriginalAssetUrls] = useState<{
+    logo_url: string;
+  }>({ logo_url: "" });
+
+  const getAssetInfoFromUrl = (url: string) => {
+    if (!url || !url.includes("cloudinary.com")) return null;
+    const parts = url.split("/");
+    const uploadIndex = parts.indexOf("upload");
+    if (uploadIndex === -1) return null;
+
+    // Resource type is usually the part before 'upload' (image, raw, video, etc.)
+    const resourceType = parts[uploadIndex - 1] || "image";
+
+    const afterUpload = parts.slice(uploadIndex + 1);
+    if (
+      afterUpload[0].startsWith("v") &&
+      /^\d+$/.test(afterUpload[0].substring(1))
+    ) {
+      afterUpload.shift();
+    }
+    const fileNameWithExt = afterUpload.join("/");
+    const publicId = fileNameWithExt.split(".")[0];
+    return { publicId, resourceType };
+  };
+
+  const deleteCloudinaryAsset = async (
+    publicId: string,
+    resourceType: string = "image",
+  ) => {
+    try {
+      await fetch("/api/admin/cloudinary-assets", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId, resourceType }),
+      });
+    } catch (err) {
+      console.error("Error deleting Cloudinary asset:", err);
+    }
+  };
+
   const [openDialog, setOpenDialog] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedClub, setSelectedClub] = useState<ClubFormState>(initialState);
@@ -95,17 +139,29 @@ export default function ClubManagementPage() {
         is_our_team: club.is_our_team || false,
         id: club.id,
       });
+      setOriginalAssetUrls({ logo_url: club.logo_url || "" });
     } else {
       setIsEditing(false);
       setSelectedClub(initialState);
+      setOriginalAssetUrls({ logo_url: "" });
     }
+    setNewlyUploadedAssets([]);
     setError(null);
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = async () => {
+    // If there are newly uploaded assets that weren't saved, delete them
+    if (newlyUploadedAssets.length > 0) {
+      for (const asset of newlyUploadedAssets) {
+        await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+      }
+    }
+
     setOpenDialog(false);
     setSelectedClub(initialState);
+    setOriginalAssetUrls({ logo_url: "" });
+    setNewlyUploadedAssets([]);
     setError(null);
   };
 
@@ -133,6 +189,27 @@ export default function ClubManagementPage() {
       const data = await res.json();
 
       if (res.ok) {
+        // Delete old logo if it was replaced
+        if (
+          originalAssetUrls.logo_url &&
+          originalAssetUrls.logo_url !== selectedClub.logo_url
+        ) {
+          const info = getAssetInfoFromUrl(originalAssetUrls.logo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+
+        // Delete any other newly uploaded assets that aren't the final one
+        for (const asset of newlyUploadedAssets) {
+          const currentLogoInfo = getAssetInfoFromUrl(selectedClub.logo_url);
+
+          if (asset.publicId !== currentLogoInfo?.publicId) {
+            await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+          }
+        }
+
+        // Clear newly uploaded tracking
+        setNewlyUploadedAssets([]);
         handleCloseDialog();
         fetchData();
       } else {
@@ -148,9 +225,23 @@ export default function ClubManagementPage() {
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this club?")) return;
     try {
-      const res = await fetch(`/api/admin/clubs/${id}`, { method: "DELETE" });
-      if (res.ok) fetchData();
-      else alert("Failed to delete club");
+      // Find the club to get logo URL before deleting
+      const clubToDelete = clubs.find((c) => c.id === id);
+
+      const res = await fetch(`/api/admin/clubs/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        // Delete logo from Cloudinary
+        if (clubToDelete?.logo_url) {
+          const info = getAssetInfoFromUrl(clubToDelete.logo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+        fetchData();
+      } else {
+        alert("Failed to delete club");
+      }
     } catch {
       alert("Error deleting club");
     }
@@ -168,12 +259,13 @@ export default function ClubManagementPage() {
   };
 
   const handleUploadSuccess = (result: CloudinaryUploadWidgetResults) => {
-    if (
-      result.event === "success" &&
-      result.info &&
-      typeof result.info !== "string"
-    ) {
-      setSelectedClub({ ...selectedClub, logo_url: result.info.secure_url });
+    if (result.info && typeof result.info !== "string") {
+      const url = result.info.secure_url;
+      const publicId = result.info.public_id;
+      const resourceType = result.info.resource_type || "image";
+
+      setSelectedClub({ ...selectedClub, logo_url: url });
+      setNewlyUploadedAssets((prev) => [...prev, { publicId, resourceType }]);
     }
   };
 
@@ -436,33 +528,36 @@ export default function ClubManagementPage() {
               </Avatar>
 
               <CldUploadWidget
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                uploadPreset={
+                  process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+                  "champions_kids"
+                }
                 onSuccess={handleUploadSuccess}
               >
-                {({ open }) => (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => open()}
-                    sx={{ borderRadius: "8px", textTransform: "none" }}
-                  >
-                    {selectedClub.logo_url ? "Change Logo" : "Upload Logo"}
-                  </Button>
-                )}
+                {({ open }) =>
+                  selectedClub.logo_url ? (
+                    <Box display="flex" flexDirection="column" gap={1}>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => open()}
+                        sx={{ borderRadius: "8px", textTransform: "none" }}
+                      >
+                        Change Logo
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => open()}
+                      sx={{ borderRadius: "8px", textTransform: "none" }}
+                    >
+                      Upload Logo
+                    </Button>
+                  )
+                }
               </CldUploadWidget>
-
-              {selectedClub.logo_url && (
-                <Button
-                  size="small"
-                  color="error"
-                  sx={{ ml: 1, textTransform: "none" }}
-                  onClick={() =>
-                    setSelectedClub({ ...selectedClub, logo_url: "" })
-                  }
-                >
-                  Remove
-                </Button>
-              )}
             </Box>
 
             {/* Name input */}

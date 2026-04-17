@@ -57,3 +57,40 @@ export async function GET() {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    // 1. Verify Authentication
+    const user = await verifyUserFromCookies();
+    if (!user || !isAdmin(user)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { publicId, resourceType = "image" } = await request.json();
+
+    if (!publicId) {
+      return NextResponse.json({ error: "Public ID is required" }, { status: 400 });
+    }
+
+    // 2. Delete asset from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+    });
+
+    if (result.result === "ok" || result.result === "not found") {
+      return NextResponse.json({ success: true, result: result.result });
+    } else {
+      console.error("Cloudinary Delete Result:", result);
+      return NextResponse.json(
+        { error: "Failed to delete asset from Cloudinary", details: result },
+        { status: 500 },
+      );
+    }
+  } catch (error) {
+    console.error("Cloudinary Delete Error:", error);
+    return NextResponse.json(
+      { error: "An error occurred while deleting the asset" },
+      { status: 500 },
+    );
+  }
+}

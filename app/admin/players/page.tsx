@@ -37,6 +37,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import SearchIcon from "@mui/icons-material/Search";
+import DownloadIcon from "@mui/icons-material/Download";
 import {
   CldUploadWidget,
   CloudinaryUploadWidgetResults,
@@ -137,6 +138,7 @@ export default function PlayerManagementPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Dialog State
@@ -155,6 +157,10 @@ export default function PlayerManagementPage() {
   const [previewImageOpen, setPreviewImageOpen] = useState(false);
   const [previewImageUrl, setPreviewImageUrl] = useState("");
 
+  // PDF Preview State
+  const [previewPdfOpen, setPreviewPdfOpen] = useState(false);
+  const [previewPdfUrl, setPreviewPdfUrl] = useState("");
+
   // Sort & Filter State
   const [sortBy, setSortBy] = useState<string>("created_at");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -163,6 +169,51 @@ export default function PlayerManagementPage() {
   const [filterTopPlayer, setFilterTopPlayer] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Tracking uploaded assets that might need to be deleted if cancelled
+  const [newlyUploadedAssets, setNewlyUploadedAssets] = useState<
+    { publicId: string; resourceType: string }[]
+  >([]);
+  const [originalAssetUrls, setOriginalAssetUrls] = useState<{
+    photo_url: string;
+    raport_url: string;
+  }>({ photo_url: "", raport_url: "" });
+
+  const getAssetInfoFromUrl = (url: string) => {
+    if (!url || !url.includes("cloudinary.com")) return null;
+    const parts = url.split("/");
+    const uploadIndex = parts.indexOf("upload");
+    if (uploadIndex === -1) return null;
+
+    // Resource type is usually the part before 'upload' (image, raw, video, etc.)
+    const resourceType = parts[uploadIndex - 1] || "image";
+
+    const afterUpload = parts.slice(uploadIndex + 1);
+    if (
+      afterUpload[0].startsWith("v") &&
+      /^\d+$/.test(afterUpload[0].substring(1))
+    ) {
+      afterUpload.shift();
+    }
+    const fileNameWithExt = afterUpload.join("/");
+    const publicId = fileNameWithExt.split(".")[0];
+    return { publicId, resourceType };
+  };
+
+  const deleteCloudinaryAsset = async (
+    publicId: string,
+    resourceType: string = "image",
+  ) => {
+    try {
+      await fetch("/api/admin/cloudinary-assets", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId, resourceType }),
+      });
+    } catch (err) {
+      console.error("Error deleting Cloudinary asset:", err);
+    }
+  };
 
   // Fetch Data
   const fetchData = async () => {
@@ -258,6 +309,14 @@ export default function PlayerManagementPage() {
     fetchData();
   }, []);
 
+  const availableUsers = useMemo(() => {
+    if (!users || !players) return [];
+    // Get IDs of users who are already players
+    const existingPlayerUserIds = new Set(players.map((p) => p.user_id));
+    // Return only those not in the players list
+    return users.filter((u) => !existingPlayerUserIds.has(u.id));
+  }, [users, players]);
+
   const handleOpenDialog = (player?: Player) => {
     setTabValue(0);
     if (player) {
@@ -270,16 +329,31 @@ export default function PlayerManagementPage() {
           : "",
       };
       setSelectedPlayer(formattedPlayer);
+      setOriginalAssetUrls({
+        photo_url: player.photo_url || "",
+        raport_url: player.raport_url || "",
+      });
     } else {
       setIsEditing(false);
       setSelectedPlayer(initialPlayerState);
+      setOriginalAssetUrls({ photo_url: "", raport_url: "" });
     }
+    setNewlyUploadedAssets([]);
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = async () => {
+    // If there are newly uploaded assets that weren't saved, delete them
+    if (newlyUploadedAssets.length > 0) {
+      for (const asset of newlyUploadedAssets) {
+        await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+      }
+    }
+
     setOpenDialog(false);
     setSelectedPlayer(initialPlayerState);
+    setOriginalAssetUrls({ photo_url: "", raport_url: "" });
+    setNewlyUploadedAssets([]);
     setError(null);
   };
 
@@ -299,6 +373,7 @@ export default function PlayerManagementPage() {
   };
 
   const handleSave = async () => {
+    setSubmitting(true);
     try {
       const url = isEditing
         ? `/api/admin/players/${selectedPlayer.id}`
@@ -314,13 +389,54 @@ export default function PlayerManagementPage() {
       const data = await res.json();
 
       if (res.ok) {
-        handleCloseDialog();
+        // Delete old assets if they were replaced
+        if (
+          originalAssetUrls.photo_url &&
+          originalAssetUrls.photo_url !== selectedPlayer.photo_url
+        ) {
+          const info = getAssetInfoFromUrl(originalAssetUrls.photo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+
+        if (
+          originalAssetUrls.raport_url &&
+          originalAssetUrls.raport_url !== selectedPlayer.raport_url
+        ) {
+          const info = getAssetInfoFromUrl(originalAssetUrls.raport_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+
+        // Delete any other newly uploaded assets that aren't the final ones
+        for (const asset of newlyUploadedAssets) {
+          const currentPhotoInfo = getAssetInfoFromUrl(
+            selectedPlayer.photo_url,
+          );
+          const currentRaportInfo = getAssetInfoFromUrl(
+            selectedPlayer.raport_url,
+          );
+
+          if (
+            asset.publicId !== currentPhotoInfo?.publicId &&
+            asset.publicId !== currentRaportInfo?.publicId
+          ) {
+            await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+          }
+        }
+
+        // Clear tracking and close
+        setNewlyUploadedAssets([]);
+        setOpenDialog(false);
+        setSelectedPlayer(initialPlayerState);
         fetchData();
       } else {
         setError(data.error || "Failed to save player");
       }
     } catch {
       setError("An error occurred while saving");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -329,11 +445,25 @@ export default function PlayerManagementPage() {
       return;
 
     try {
+      // Find the player to get asset URLs before deleting
+      const playerToDelete = players.find((p) => p.id === id);
+
       const res = await fetch(`/api/admin/players/${id}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
+        // Delete assets from Cloudinary
+        if (playerToDelete?.photo_url) {
+          const info = getAssetInfoFromUrl(playerToDelete.photo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+        if (playerToDelete?.raport_url) {
+          const info = getAssetInfoFromUrl(playerToDelete.raport_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
         fetchData();
       } else {
         alert("Failed to delete player");
@@ -384,10 +514,19 @@ export default function PlayerManagementPage() {
       result.info &&
       typeof result.info !== "string"
     ) {
+      const newPhotoUrl = result.info.secure_url;
+      const newPublicId = result.info.public_id;
+      const resourceType = result.info.resource_type || "image";
+
       setSelectedPlayer({
         ...selectedPlayer,
-        photo_url: result.info.secure_url,
+        photo_url: newPhotoUrl,
       });
+
+      setNewlyUploadedAssets((prev) => [
+        ...prev,
+        { publicId: newPublicId, resourceType },
+      ]);
     }
   };
 
@@ -1020,7 +1159,7 @@ export default function PlayerManagementPage() {
                     <MenuItem value={0} disabled>
                       Select a user...
                     </MenuItem>
-                    {users.map((user) => (
+                    {availableUsers.map((user) => (
                       <MenuItem key={user.id} value={user.id}>
                         {user.name} ({user.email})
                       </MenuItem>
@@ -1078,18 +1217,32 @@ export default function PlayerManagementPage() {
                         clientAllowedFormats: ["jpg", "png", "webp"],
                       }}
                     >
-                      {({ open }) => (
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => open()}
-                          sx={{ borderRadius: "8px", textTransform: "none" }}
-                        >
-                          {selectedPlayer.photo_url
-                            ? "Change Photo"
-                            : "Upload Photo"}
-                        </Button>
-                      )}
+                      {({ open }) =>
+                        selectedPlayer.photo_url ? (
+                          <Box display="flex" flexDirection="column" gap={1}>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => open()}
+                              sx={{
+                                borderRadius: "8px",
+                                textTransform: "none",
+                              }}
+                            >
+                              Change Photo
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => open()}
+                            sx={{ borderRadius: "8px", textTransform: "none" }}
+                          >
+                            Upload Photo
+                          </Button>
+                        )
+                      }
                     </CldUploadWidget>
                   </Box>
                 </Box>
@@ -1334,18 +1487,28 @@ export default function PlayerManagementPage() {
                       >
                         ✓ Raport Uploaded
                       </Typography>
-                      <a
-                        href={selectedPlayer.raport_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          fontSize: "0.8rem",
-                          color: "#1976d2",
-                          textDecoration: "underline",
-                        }}
+                      <Box
+                        display="flex"
+                        justifyContent="center"
+                        gap={2}
+                        mt={0.5}
                       >
-                        View current PDF
-                      </a>
+                        <Typography
+                          variant="caption"
+                          onClick={() => {
+                            setPreviewPdfUrl(selectedPlayer.raport_url);
+                            setPreviewPdfOpen(true);
+                          }}
+                          sx={{
+                            color: "primary.main",
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            fontWeight: "600",
+                          }}
+                        >
+                          View PDF
+                        </Typography>
+                      </Box>
                     </Box>
                   ) : (
                     <Typography
@@ -1364,10 +1527,20 @@ export default function PlayerManagementPage() {
                     }
                     onSuccess={(results: CloudinaryUploadWidgetResults) => {
                       if (results.info && typeof results.info !== "string") {
+                        const newRaportUrl = results.info.secure_url;
+                        const newPublicId = results.info.public_id;
+                        const resourceType =
+                          results.info.resource_type || "image";
+
                         setSelectedPlayer({
                           ...selectedPlayer,
-                          raport_url: results.info.secure_url,
+                          raport_url: newRaportUrl,
                         });
+
+                        setNewlyUploadedAssets((prev) => [
+                          ...prev,
+                          { publicId: newPublicId, resourceType },
+                        ]);
                       }
                     }}
                     options={{
@@ -1426,6 +1599,7 @@ export default function PlayerManagementPage() {
         <DialogActions sx={{ p: 3 }}>
           <Button
             onClick={handleCloseDialog}
+            disabled={submitting}
             sx={{
               textTransform: "none",
               fontWeight: "600",
@@ -1437,7 +1611,10 @@ export default function PlayerManagementPage() {
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={!selectedPlayer.user_id && !isEditing}
+            disabled={(!selectedPlayer.user_id && !isEditing) || submitting}
+            startIcon={
+              submitting ? <CircularProgress size={20} color="inherit" /> : null
+            }
             sx={{
               borderRadius: "12px",
               px: 4,
@@ -1446,7 +1623,13 @@ export default function PlayerManagementPage() {
               boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
             }}
           >
-            {isEditing ? "Update Player" : "Save Profile"}
+            {submitting
+              ? isEditing
+                ? "Updating..."
+                : "Saving..."
+              : isEditing
+                ? "Update Player"
+                : "Save Profile"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -1537,6 +1720,60 @@ export default function PlayerManagementPage() {
               borderRadius: "16px",
             }}
           />
+        </Box>
+      </Dialog>
+      {/* PDF Preview Dialog */}
+      <Dialog
+        open={previewPdfOpen}
+        onClose={() => setPreviewPdfOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: "24px",
+            height: "90vh",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 2,
+            borderBottom: "1px solid rgba(0,0,0,0.05)",
+          }}
+        >
+          <Typography variant="h6" fontWeight="800">
+            Raport Preview
+          </Typography>
+          <Box>
+            <IconButton
+              component="a"
+              href={previewPdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ mr: 1 }}
+              title="Download PDF"
+            >
+              <DownloadIcon />
+            </IconButton>
+            <IconButton onClick={() => setPreviewPdfOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+        <Box sx={{ flexGrow: 1, height: "100%", bgcolor: "#525659" }}>
+          {previewPdfUrl && (
+            <iframe
+              src={`${previewPdfUrl}#toolbar=0`}
+              width="100%"
+              height="100%"
+              style={{ border: "none" }}
+              title="PDF Preview"
+            />
+          )}
         </Box>
       </Dialog>
     </Box>

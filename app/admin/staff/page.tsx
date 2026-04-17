@@ -65,7 +65,52 @@ export default function StaffManagementPage() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Tracking uploaded assets that might need to be deleted if cancelled
+  const [newlyUploadedAssets, setNewlyUploadedAssets] = useState<
+    { publicId: string; resourceType: string }[]
+  >([]);
+  const [originalAssetUrls, setOriginalAssetUrls] = useState<{
+    photo_url: string;
+  }>({ photo_url: "" });
+
+  const getAssetInfoFromUrl = (url: string) => {
+    if (!url || !url.includes("cloudinary.com")) return null;
+    const parts = url.split("/");
+    const uploadIndex = parts.indexOf("upload");
+    if (uploadIndex === -1) return null;
+
+    // Resource type is usually the part before 'upload' (image, raw, video, etc.)
+    const resourceType = parts[uploadIndex - 1] || "image";
+
+    const afterUpload = parts.slice(uploadIndex + 1);
+    if (
+      afterUpload[0].startsWith("v") &&
+      /^\d+$/.test(afterUpload[0].substring(1))
+    ) {
+      afterUpload.shift();
+    }
+    const fileNameWithExt = afterUpload.join("/");
+    const publicId = fileNameWithExt.split(".")[0];
+    return { publicId, resourceType };
+  };
+
+  const deleteCloudinaryAsset = async (
+    publicId: string,
+    resourceType: string = "image",
+  ) => {
+    try {
+      await fetch("/api/admin/cloudinary-assets", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId, resourceType }),
+      });
+    } catch (err) {
+      console.error("Error deleting Cloudinary asset:", err);
+    }
+  };
 
   // Dialog State
   const [openDialog, setOpenDialog] = useState(false);
@@ -124,6 +169,14 @@ export default function StaffManagementPage() {
     });
   }, [staff, searchQuery]);
 
+  const availableUsers = useMemo(() => {
+    if (!users || !staff) return [];
+    // Get IDs of users who are already staff
+    const existingStaffUserIds = new Set(staff.map((s) => s.user_id));
+    // Return only those not in the staff list
+    return users.filter((u) => !existingStaffUserIds.has(u.id));
+  }, [users, staff]);
+
   const handleOpenDialog = (member?: StaffMember) => {
     if (member) {
       setIsEditing(true);
@@ -133,25 +186,33 @@ export default function StaffManagementPage() {
         photo_url: member.photo_url,
         description: member.description,
       });
+      setOriginalAssetUrls({ photo_url: member.photo_url || "" });
     } else {
       setIsEditing(false);
       setSelectedStaff(initialStaffState);
+      setOriginalAssetUrls({ photo_url: "" });
     }
+    setNewlyUploadedAssets([]);
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = async () => {
+    // If there are newly uploaded assets that weren't saved, delete them
+    if (newlyUploadedAssets.length > 0) {
+      for (const asset of newlyUploadedAssets) {
+        await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+      }
+    }
+
     setOpenDialog(false);
     setSelectedStaff(initialStaffState);
+    setOriginalAssetUrls({ photo_url: "" });
+    setNewlyUploadedAssets([]);
     setError(null);
   };
 
   const handleSave = async () => {
-    if (!selectedStaff.user_id) {
-      setError("User is required");
-      return;
-    }
-
+    setSubmitting(true);
     try {
       const url = isEditing
         ? `/api/admin/staff/${selectedStaff.id}`
@@ -167,13 +228,37 @@ export default function StaffManagementPage() {
       const data = await res.json();
 
       if (res.ok) {
-        handleCloseDialog();
+        // Delete old asset if it was replaced
+        if (
+          originalAssetUrls.photo_url &&
+          originalAssetUrls.photo_url !== selectedStaff.photo_url
+        ) {
+          const info = getAssetInfoFromUrl(originalAssetUrls.photo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+
+        // Delete any other newly uploaded assets that aren't the final one
+        for (const asset of newlyUploadedAssets) {
+          const currentPhotoInfo = getAssetInfoFromUrl(selectedStaff.photo_url);
+
+          if (asset.publicId !== currentPhotoInfo?.publicId) {
+            await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+          }
+        }
+
+        // Clear tracking and close
+        setNewlyUploadedAssets([]);
+        setOpenDialog(false);
+        setSelectedStaff(initialStaffState);
         fetchData();
       } else {
         setError(data.error || "Failed to save staff member");
       }
     } catch {
       setError("An error occurred while saving");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -181,11 +266,20 @@ export default function StaffManagementPage() {
     if (!confirm("Are you sure you want to delete this staff profile?")) return;
 
     try {
+      // Find the staff member to get photo URL before deleting
+      const memberToDelete = staff.find((s) => s.id === id);
+
       const res = await fetch(`/api/admin/staff/${id}`, {
         method: "DELETE",
       });
 
       if (res.ok) {
+        // Delete photo from Cloudinary
+        if (memberToDelete?.photo_url) {
+          const info = getAssetInfoFromUrl(memberToDelete.photo_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
         fetchData();
       } else {
         alert("Failed to delete staff member");
@@ -201,10 +295,19 @@ export default function StaffManagementPage() {
       result.info &&
       typeof result.info !== "string"
     ) {
+      const newPhotoUrl = result.info.secure_url;
+      const newPublicId = result.info.public_id;
+      const resourceType = result.info.resource_type || "image";
+
       setSelectedStaff({
         ...selectedStaff,
-        photo_url: result.info.secure_url,
+        photo_url: newPhotoUrl,
       });
+
+      setNewlyUploadedAssets((prev) => [
+        ...prev,
+        { publicId: newPublicId, resourceType },
+      ]);
     }
   };
 
@@ -471,27 +574,32 @@ export default function StaffManagementPage() {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3, mt: 1 }}>
-            <TextField
-              select
-              fullWidth
-              label="Select User"
-              value={selectedStaff.user_id}
-              onChange={(e) =>
-                setSelectedStaff({ ...selectedStaff, user_id: e.target.value })
-              }
-              disabled={isEditing}
-              required
-              helperText="Only users with role 'coach' or 'staff' are shown here."
-              sx={{
-                "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-              }}
-            >
-              {users.map((user) => (
-                <MenuItem key={user.id} value={user.id}>
-                  {user.name} ({user.role})
-                </MenuItem>
-              ))}
-            </TextField>
+            {!isEditing && (
+              <TextField
+                select
+                fullWidth
+                label="Select User"
+                value={selectedStaff.user_id}
+                onChange={(e) =>
+                  setSelectedStaff({
+                    ...selectedStaff,
+                    user_id: e.target.value,
+                  })
+                }
+                disabled={isEditing}
+                required
+                helperText="Only users with role 'coach' or 'staff' are shown here."
+                sx={{
+                  "& .MuiOutlinedInput-root": { borderRadius: "12px" },
+                }}
+              >
+                {availableUsers.map((user) => (
+                  <MenuItem key={user.id} value={user.id}>
+                    {user.name} ({user.role})
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
 
             <Box
               display="flex"
@@ -530,18 +638,32 @@ export default function StaffManagementPage() {
                   uploadPreset="champions_kids"
                   onSuccess={handleUploadSuccess}
                 >
-                  {({ open }) => (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() => open()}
-                      sx={{ borderRadius: "8px", textTransform: "none" }}
-                    >
-                      {selectedStaff.photo_url
-                        ? "Change Photo"
-                        : "Upload Photo"}
-                    </Button>
-                  )}
+                  {({ open }) =>
+                    selectedStaff.photo_url ? (
+                      <Box display="flex" flexDirection="column" gap={1}>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => open()}
+                          sx={{
+                            borderRadius: "8px",
+                            textTransform: "none",
+                          }}
+                        >
+                          Change Photo
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => open()}
+                        sx={{ borderRadius: "8px", textTransform: "none" }}
+                      >
+                        Upload Photo
+                      </Button>
+                    )
+                  }
                 </CldUploadWidget>
               </Box>
             </Box>
@@ -566,6 +688,7 @@ export default function StaffManagementPage() {
         <DialogActions sx={{ p: 3 }}>
           <Button
             onClick={handleCloseDialog}
+            disabled={submitting}
             sx={{
               textTransform: "none",
               fontWeight: "600",
@@ -575,18 +698,27 @@ export default function StaffManagementPage() {
             Cancel
           </Button>
           <Button
-            onClick={handleSave}
             variant="contained"
-            disabled={!selectedStaff.user_id && !isEditing}
+            onClick={handleSave}
+            disabled={(!selectedStaff.user_id && !isEditing) || submitting}
+            startIcon={
+              submitting ? <CircularProgress size={20} color="inherit" /> : null
+            }
             sx={{
               borderRadius: "12px",
               px: 4,
               textTransform: "none",
               fontWeight: "600",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0 4px 12px rgba(25, 118, 210, 0.3)",
             }}
           >
-            {isEditing ? "Update Staff" : "Save Profile"}
+            {submitting
+              ? isEditing
+                ? "Updating..."
+                : "Saving..."
+              : isEditing
+                ? "Update Staff"
+                : "Save Profile"}
           </Button>
         </DialogActions>
       </Dialog>

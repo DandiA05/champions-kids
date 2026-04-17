@@ -120,6 +120,51 @@ export default function EventManagementPage() {
     documentation_urls: [] as string[],
   });
 
+  // Tracking uploaded assets that might need to be deleted if cancelled
+  const [newlyUploadedAssets, setNewlyUploadedAssets] = useState<
+    { publicId: string; resourceType: string }[]
+  >([]);
+  const [originalAssetUrls, setOriginalAssetUrls] = useState<{
+    banner_url: string;
+    documentation_urls: string[];
+  }>({ banner_url: "", documentation_urls: [] });
+
+  const getAssetInfoFromUrl = (url: string) => {
+    if (!url || !url.includes("cloudinary.com")) return null;
+    const parts = url.split("/");
+    const uploadIndex = parts.indexOf("upload");
+    if (uploadIndex === -1) return null;
+
+    // Resource type is usually the part before 'upload' (image, raw, video, etc.)
+    const resourceType = parts[uploadIndex - 1] || "image";
+
+    const afterUpload = parts.slice(uploadIndex + 1);
+    if (
+      afterUpload[0].startsWith("v") &&
+      /^\d+$/.test(afterUpload[0].substring(1))
+    ) {
+      afterUpload.shift();
+    }
+    const fileNameWithExt = afterUpload.join("/");
+    const publicId = fileNameWithExt.split(".")[0];
+    return { publicId, resourceType };
+  };
+
+  const deleteCloudinaryAsset = async (
+    publicId: string,
+    resourceType: string = "image",
+  ) => {
+    try {
+      await fetch("/api/admin/cloudinary-assets", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicId, resourceType }),
+      });
+    } catch (err) {
+      console.error("Error deleting Cloudinary asset:", err);
+    }
+  };
+
   // Sort & Filter states
   const [sortBy, setSortBy] = useState<string>("event_date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
@@ -198,6 +243,10 @@ export default function EventManagementPage() {
           : "",
         documentation_urls: event.documentation_urls || [],
       });
+      setOriginalAssetUrls({
+        banner_url: event.banner_url || "",
+        documentation_urls: [...(event.documentation_urls || [])],
+      });
     } else {
       setSelectedEvent(null);
       setFormData({
@@ -211,7 +260,9 @@ export default function EventManagementPage() {
           .split("T")[0],
         documentation_urls: [],
       });
+      setOriginalAssetUrls({ banner_url: "", documentation_urls: [] });
     }
+    setNewlyUploadedAssets([]);
     setOpen(true);
   };
 
@@ -239,9 +290,17 @@ export default function EventManagementPage() {
     setPreviewOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    // If there are newly uploaded assets that weren't saved, delete them
+    if (newlyUploadedAssets.length > 0) {
+      for (const asset of newlyUploadedAssets) {
+        await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+      }
+    }
+
     setOpen(false);
     setSelectedEvent(null);
+    setNewlyUploadedAssets([]);
     setError(null);
   };
 
@@ -274,9 +333,43 @@ export default function EventManagementPage() {
 
       const data = await response.json();
       if (response.ok) {
+        // Delete old banner if it was replaced
+        if (
+          originalAssetUrls.banner_url &&
+          originalAssetUrls.banner_url !== formData.banner_url
+        ) {
+          const info = getAssetInfoFromUrl(originalAssetUrls.banner_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+
+        // Delete documentation photos that were removed
+        for (const oldUrl of originalAssetUrls.documentation_urls) {
+          if (!formData.documentation_urls.includes(oldUrl)) {
+            const info = getAssetInfoFromUrl(oldUrl);
+            if (info)
+              await deleteCloudinaryAsset(info.publicId, info.resourceType);
+          }
+        }
+
+        // Delete any other newly uploaded assets that aren't in the final form
+        for (const asset of newlyUploadedAssets) {
+          const bannerInfo = getAssetInfoFromUrl(formData.banner_url);
+          const isInDocs = formData.documentation_urls.some((url) => {
+            const info = getAssetInfoFromUrl(url);
+            return info?.publicId === asset.publicId;
+          });
+
+          if (asset.publicId !== bannerInfo?.publicId && !isInDocs) {
+            await deleteCloudinaryAsset(asset.publicId, asset.resourceType);
+          }
+        }
+
         setSuccess(
           `Event ${selectedEvent ? "updated" : "created"} successfully`,
         );
+        // Clear newly uploaded tracking
+        setNewlyUploadedAssets([]);
         handleClose();
         fetchEvents();
       } else {
@@ -297,6 +390,21 @@ export default function EventManagementPage() {
         method: "DELETE",
       });
       if (response.ok) {
+        // Delete banner
+        if (selectedEvent.banner_url) {
+          const info = getAssetInfoFromUrl(selectedEvent.banner_url);
+          if (info)
+            await deleteCloudinaryAsset(info.publicId, info.resourceType);
+        }
+        // Delete documentation photos
+        if (selectedEvent.documentation_urls?.length > 0) {
+          for (const url of selectedEvent.documentation_urls) {
+            const info = getAssetInfoFromUrl(url);
+            if (info)
+              await deleteCloudinaryAsset(info.publicId, info.resourceType);
+          }
+        }
+
         setSuccess("Event deleted successfully");
         handleDeleteClose();
         fetchEvents();
@@ -314,17 +422,31 @@ export default function EventManagementPage() {
   const handleBannerUpload = (results: CloudinaryUploadWidgetResults) => {
     if (results.info && typeof results.info !== "string") {
       const url = results.info.secure_url;
+      const publicId = results.info.public_id;
+      const resourceType = results.info.resource_type || "image";
+
       setFormData((prev) => ({ ...prev, banner_url: url }));
+      setNewlyUploadedAssets((prev) => [
+        ...prev,
+        { publicId, resourceType },
+      ]);
     }
   };
 
   const handleDocsUpload = (results: CloudinaryUploadWidgetResults) => {
     if (results.info && typeof results.info !== "string") {
       const url = results.info.secure_url;
+      const publicId = results.info.public_id;
+      const resourceType = results.info.resource_type || "image";
+
       setFormData((prev) => ({
         ...prev,
         documentation_urls: [...prev.documentation_urls, url],
       }));
+      setNewlyUploadedAssets((prev) => [
+        ...prev,
+        { publicId, resourceType },
+      ]);
     }
   };
 
