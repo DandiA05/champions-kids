@@ -25,6 +25,8 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { ThemeProvider } from "./theme-provider";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import GroupsIcon from "@mui/icons-material/Groups";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import BadgeIcon from "@mui/icons-material/Badge";
 
 const drawerWidth = 240;
 
@@ -39,6 +41,11 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 const menuItems: MenuItem[] = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
   { text: "User Management", icon: <PeopleIcon />, path: "/admin/users" },
+  {
+    text: "Staff Management",
+    icon: <BadgeIcon />,
+    path: "/admin/staff",
+  },
   {
     text: "Player Management",
     icon: <SportsSoccerIcon />,
@@ -58,6 +65,11 @@ const menuItems: MenuItem[] = [
     text: "Match Management",
     icon: <EmojiEventsIcon />,
     path: "/admin/matches",
+  },
+  {
+    text: "Schedule Management",
+    icon: <CalendarMonthIcon />,
+    path: "/admin/schedules",
   },
 ];
 

@@ -31,8 +31,20 @@ export interface User {
   name: string;
   email: string;
   password_hash: string;
-  role: "admin" | "non-admin" | "player";
+  role: "admin" | "non-admin" | "player" | "coach" | "staff";
   is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface StaffMember {
+  id: number;
+  user_id: number;
+  user_name?: string;
+  user_email?: string;
+  role?: string;
+  photo_url: string;
+  description: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -65,6 +77,8 @@ export interface Player {
   yellow_cards: number;
   red_cards: number;
   mom: number;
+  raport_url: string;
+  coach_notes: string;
 
   created_at: Date;
   updated_at: Date;
@@ -79,6 +93,16 @@ export interface Event {
   description: string;
   event_date: string;
   documentation_urls: string[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Schedule {
+  id: number;
+  name: string;
+  date: string;
+  category: "training" | "sparing" | "tournament" | "liga";
+  description: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -140,7 +164,7 @@ export const db = {
     name: string,
     email: string,
     passwordHash: string,
-    role: "admin" | "non-admin" | "player" = "non-admin",
+    role: "admin" | "non-admin" | "player" | "coach" | "staff" = "non-admin",
     is_active: boolean = true,
   ): Promise<User> {
     const users = await sql`
@@ -158,7 +182,7 @@ export const db = {
       name?: string;
       email?: string;
       password_hash?: string;
-      role?: "admin" | "non-admin" | "player";
+      role?: "admin" | "non-admin" | "player" | "coach" | "staff";
       is_active?: boolean;
     },
   ): Promise<User> {
@@ -184,6 +208,138 @@ export const db = {
       UPDATE users 
       SET updated_at = CURRENT_TIMESTAMP 
       WHERE id = ${id}
+    `;
+  },
+
+  // --- Schedule Helpers ---
+
+  // Get all schedules
+  async getAllSchedules(): Promise<Schedule[]> {
+    const schedules = await sql`
+      SELECT * FROM schedules ORDER BY date DESC
+    `;
+    return schedules as Schedule[];
+  },
+
+  // Get schedule by ID
+  async getScheduleById(id: number): Promise<Schedule | null> {
+    const schedules = await sql`
+      SELECT * FROM schedules WHERE id = ${id} LIMIT 1
+    `;
+    return (schedules[0] as Schedule) || null;
+  },
+
+  // Create new schedule
+  async createSchedule(
+    name: string,
+    date: string,
+    category: string,
+    description: string,
+  ): Promise<Schedule> {
+    const schedules = await sql`
+      INSERT INTO schedules (name, date, category, description)
+      VALUES (${name}, ${date}, ${category}, ${description})
+      RETURNING *
+    `;
+    return schedules[0] as Schedule;
+  },
+
+  // Update schedule
+  async updateSchedule(
+    id: number,
+    updates: {
+      name?: string;
+      date?: string;
+      category?: string;
+      description?: string;
+    },
+  ): Promise<Schedule> {
+    const { name, date, category, description } = updates;
+    const schedules = await sql`
+      UPDATE schedules 
+      SET 
+        name = COALESCE(${name}, name),
+        date = COALESCE(${date}, date),
+        category = COALESCE(${category}, category),
+        description = COALESCE(${description}, description),
+        updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return schedules[0] as Schedule;
+  },
+
+  // Delete schedule
+  async deleteSchedule(id: number): Promise<void> {
+    await sql`
+      DELETE FROM schedules WHERE id = ${id}
+    `;
+  },
+
+  // --- Staff Helpers ---
+
+  // Get all staff
+  async getAllStaff(): Promise<StaffMember[]> {
+    const staff = await sql`
+      SELECT s.*, u.name as user_name, u.email as user_email, u.role
+      FROM staff s
+      JOIN users u ON s.user_id = u.id
+      ORDER BY s.created_at DESC
+    `;
+    return staff as StaffMember[];
+  },
+
+  // Get staff by ID
+  async getStaffById(id: number): Promise<StaffMember | null> {
+    const staff = await sql`
+      SELECT s.*, u.name as user_name, u.email as user_email, u.role
+      FROM staff s
+      JOIN users u ON s.user_id = u.id
+      WHERE s.id = ${id}
+      LIMIT 1
+    `;
+    return (staff[0] as StaffMember) || null;
+  },
+
+  // Create new staff
+  async createStaff(
+    userId: number,
+    photoUrl: string,
+    description: string,
+  ): Promise<StaffMember> {
+    const staff = await sql`
+      INSERT INTO staff (user_id, photo_url, description)
+      VALUES (${userId}, ${photoUrl}, ${description})
+      RETURNING *
+    `;
+    return staff[0] as StaffMember;
+  },
+
+  // Update staff
+  async updateStaff(
+    id: number,
+    updates: {
+      photo_url?: string;
+      description?: string;
+    },
+  ): Promise<StaffMember> {
+    const { photo_url, description } = updates;
+    const staff = await sql`
+      UPDATE staff 
+      SET 
+        photo_url = COALESCE(${photo_url}, photo_url),
+        description = COALESCE(${description}, description),
+        updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ${id}
+      RETURNING *
+    `;
+    return staff[0] as StaffMember;
+  },
+
+  // Delete staff
+  async deleteStaff(id: number): Promise<void> {
+    await sql`
+      DELETE FROM staff WHERE id = ${id}
     `;
   },
 };

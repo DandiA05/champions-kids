@@ -1,0 +1,340 @@
+.calendar-container {
+  background: #000; /* Matching match-schedule .bg-light override */
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  margin-bottom: 50px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 20px;
+}
+
+.calendar-header h2 {
+  font-family: 'Josefin Sans', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0;
+  color: #fff;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+.calendar-nav-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--pgs_secondary_color, #F5A623);
+  color: black;
+  border-color: var(--pgs_secondary_color, #F5A623);
+  transform: scale(1.1);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.calendar-day-label {
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--pgs_secondary_color, #F5A623);
+  font-size: 0.8rem;
+  padding-bottom: 15px;
+}
+
+.calendar-day {
+  aspect-ratio: 1 / 1;
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.calendar-day:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.calendar-day.empty {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.calendar-day.today {
+  border: 2px solid var(--pgs_secondary_color, #F5A623);
+}
+
+.calendar-day.selected {
+  background: rgba(255,255,255,0.1);
+  border-color: #fff;
+}
+
+.day-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.event-indicators {
+  display: flex;
+  gap: 4px;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.indicator.training { background: #4caf50; }
+.indicator.sparing { background: #2196f3; }
+.indicator.tournament { background: #ff9800; }
+.indicator.liga { background: #9c27b0; }
+
+.events-list-container {
+  margin-top: 0;
+}
+
+.events-list-container h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  border-left: 4px solid var(--pgs_secondary_color, #F5A623);
+  padding-left: 15px;
+}
+
+.event-item {
+  background: #111;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
+}
+
+.event-item:hover {
+  background: #1a1a1a;
+  border-color: rgba(255,255,255,0.2);
+  transform: translateX(5px);
+}
+
+/* Category Specific Colors using theme or distinct highlights */
+.event-item.training { border-right: 4px solid #4caf50; }
+.event-item.sparing { border-right: 4px solid #2196f3; }
+.event-item.tournament { border-right: 4px solid #ff9800; }
+.event-item.liga { border-right: 4px solid #9c27b0; }
+
+.event-icon-wrapper {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.event-main-info {
+  flex-grow: 1;
+}
+
+.event-main-info h4 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #fff;
+}
+
+.event-category {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+  display: block;
+}
+
+.event-desc {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #aaa;
+  line-height: 1.4;
+}
+
+.calendar-main-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.calendar-grid-area {
+  flex: 1.5;
+  min-width: 0;
+}
+
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.legend-icon svg {
+  font-size: 1.2rem;
+}
+
+.legend-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.calendar-info-area {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 991px) {
+  .calendar-container {
+    padding: 25px;
+  }
+  .calendar-main-layout {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .calendar-grid-area, .calendar-info-area {
+    flex: none;
+    width: 100%;
+  }
+  .calendar-legend {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .calendar-container {
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .calendar-header {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+  }
+  .calendar-header h2 {
+    font-size: 1.2rem;
+  }
+  .calendar-nav-btn {
+    width: 35px;
+    height: 35px;
+  }
+  .calendar-grid {
+    gap: 6px;
+  }
+  .calendar-day-label {
+    font-size: 0.65rem;
+    padding-bottom: 8px;
+  }
+  .calendar-day {
+    padding: 6px;
+    border-radius: 6px;
+  }
+  .day-number {
+    font-size: 0.85rem;
+  }
+  .indicator {
+    width: 4px;
+    height: 4px;
+  }
+  .calendar-legend {
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 15px;
+  }
+  .legend-label {
+    font-size: 0.7rem;
+  }
+  .legend-icon svg {
+    font-size: 1rem;
+  }
+  .events-list-container h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  .event-item {
+    padding: 12px;
+    gap: 12px;
+    border-radius: 10px;
+  }
+  .event-icon-wrapper {
+    width: 35px;
+    height: 35px;
+  }
+  .event-main-info h4 {
+    font-size: 0.95rem;
+  }
+  .event-desc {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .calendar-grid {
+    gap: 4px;
+  }
+  .calendar-day {
+    padding: 4px;
+  }
+  .day-number {
+    font-size: 0.75rem;
+  }
+}

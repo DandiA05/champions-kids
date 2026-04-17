@@ -7,6 +7,7 @@ const JWT_SECRET =
 const secret = new TextEncoder().encode(JWT_SECRET);
 const JWT_EXPIRES_IN = "7d"; // Token expires in 7 days
 const COOKIE_NAME = "admin_token";
+const PLAYER_COOKIE_NAME = "accesstokenPlayer";
 
 // JWT Payload interface
 export interface JWTPayload extends jose.JWTPayload {
@@ -55,8 +56,9 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
 // Get token from cookies (server-side)
 export async function getTokenFromCookies(): Promise<string | null> {
   const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME);
-  return token?.value || null;
+  const adminToken = cookieStore.get(COOKIE_NAME);
+  const playerToken = cookieStore.get(PLAYER_COOKIE_NAME);
+  return adminToken?.value || playerToken?.value || null;
 }
 
 // Verify user from request cookies
@@ -80,4 +82,4 @@ export const cookieOptions = {
   path: "/",
 };
 
-export { COOKIE_NAME };
+export { COOKIE_NAME, PLAYER_COOKIE_NAME };

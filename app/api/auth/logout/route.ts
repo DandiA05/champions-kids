@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { COOKIE_NAME } from "@/lib/auth";
+import { COOKIE_NAME, PLAYER_COOKIE_NAME } from "@/lib/auth";
 
 export async function POST() {
   try {
@@ -8,8 +8,9 @@ export async function POST() {
       { status: 200 },
     );
 
-    // Clear the auth cookie
+    // Clear the auth cookies
     response.cookies.delete(COOKIE_NAME);
+    response.cookies.delete(PLAYER_COOKIE_NAME);
 
     return response;
   } catch (error) {

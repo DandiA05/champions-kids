@@ -37,6 +37,8 @@ export async function PUT(
       mom,
       is_active,
       is_top_player,
+      raport_url,
+      coach_notes,
     } = body;
 
     const updatedPlayer = await sql`
@@ -63,6 +65,8 @@ export async function PUT(
         mom = ${mom},
         is_active = ${is_active},
         is_top_player = ${is_top_player},
+        raport_url = COALESCE(${raport_url}, raport_url),
+        coach_notes = COALESCE(${coach_notes}, coach_notes),
         updated_at = CURRENT_TIMESTAMP
       WHERE id = ${id}
       RETURNING *

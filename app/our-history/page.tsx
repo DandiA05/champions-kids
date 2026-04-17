@@ -145,7 +145,7 @@ export default function OurHistory() {
                     </div>
                     <div className="history-info-content order-md-1">
                       <h4 className="history-info-title mb-2">
-                        <a href="#">Champions of europe 2018 - 2019</a>
+                        <a href="#">campions of europe 2018 - 2019</a>
                       </h4>
                       <p className="text-white">
                         This path is just like today, with one difference: you
@@ -174,7 +174,7 @@ export default function OurHistory() {
                     </div>
                     <div className="history-info-content">
                       <h4 className="history-info-title mb-2">
-                        <a href="#">Champions of champions-league 2022-2023 </a>
+                        <a href="#">campions of champions-league 2022-2023 </a>
                       </h4>
                       <p className="mb-0 text-white">
                         This path is just like today, with one difference: you

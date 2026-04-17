@@ -4,6 +4,7 @@ import {
   comparePassword,
   generateToken,
   COOKIE_NAME,
+  PLAYER_COOKIE_NAME,
   cookieOptions,
 } from "@/lib/auth";
 import { cookies } from "next/headers";
@@ -50,10 +51,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is admin
-    if (user.role !== "admin") {
+    // Check if user is allowed to login
+    const allowedRoles = ["admin", "player"];
+    if (!allowedRoles.includes(user.role)) {
       return NextResponse.json(
-        { error: "Access denied. Admin role required." },
+        { error: `Access denied. ${user.role} role is not allowed to login here.` },
         { status: 403 },
       );
     }
@@ -65,11 +67,14 @@ export async function POST(request: NextRequest) {
       role: user.role,
     });
 
+    // Determine cookie name based on role
+    const activeCookieName = user.role === "admin" ? COOKIE_NAME : PLAYER_COOKIE_NAME;
+
     // Set HttpOnly cookie
     const cookieStore = await cookies();
-    cookieStore.set(COOKIE_NAME, token, {
+    cookieStore.set(activeCookieName, token, {
       ...cookieOptions,
-      secure: false, // Ensure it works in dev
+      secure: process.env.NODE_ENV === "production",
     });
 
     return NextResponse.json(

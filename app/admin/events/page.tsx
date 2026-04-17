@@ -562,10 +562,14 @@ export default function EventManagementPage() {
                         <Box
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
-                          <CollectionsIcon fontSize="small" color="action" />
-                          <Typography variant="body2" fontWeight="600">
+                          <Typography
+                            variant="body2"
+                            fontWeight="600"
+                            color="black"
+                          >
                             {event.documentation_urls?.length || 0}
                           </Typography>
+                          <CollectionsIcon fontSize="small" color="action" />
                         </Box>
                       </TableCell>
                       <TableCell align="right">

@@ -49,48 +49,54 @@ export default async function TopPlayers() {
             >
               {players.map((player: any) => (
                 <div className="item mb-4 mb-lg-0" key={player.id}>
-                  <Link href={`/players/${player.id}`}>
-                    <div className="player">
-                      <img
-                        className="img-fluid"
-                        src={player.photo_url || "/images/home-01/team-01.jpg"}
-                        alt={player.user_name}
-                        style={{
-                          width: "100%",
-                          aspectRatio: "3 / 4",
-                          objectFit: "cover",
-                          backgroundColor: "white",
-                          display: "block",
-                        }}
-                      />
-                    </div>
-                  </Link>
-                  <div className="player-info">
-                    <span className="player-number">
-                      {player.jersey_number || "00"}
-                    </span>
-                    <div className="player-name">
-                      <h3 className="text-uppercase title">
-                        <Link href={`/players/${player.id}`}>
-                          {player.user_name}
-                        </Link>
-                      </h3>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span
-                          className="badge text-white px-4 py-2"
+                  <div className="player-card-sporty">
+                    <Link href={`/players/${player.id}`}>
+                      <div className="player-img-container">
+                        <div className="jersey-number-overlay">
+                          {player.jersey_number || "00"}
+                        </div>
+                        <img
+                          className="img-fluid"
+                          src={player.photo_url || "/images/home-01/team-01.jpg"}
+                          alt={player.user_name}
                           style={{
-                            fontSize: "0.7rem",
-                            borderRadius: "30px",
-                            letterSpacing: "1px",
+                            width: "100%",
+                            aspectRatio: "3 / 4",
+                            objectFit: "cover",
+                            display: "block",
+                            position: "relative",
+                            zIndex: 1,
+                          }}
+                        />
+                      </div>
+                    </Link>
+                    <div className="player-meta">
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h4 className="player-name-sporty mb-0">
+                          <Link
+                            href={`/players/${player.id}`}
+                            className="text-dark text-decoration-none"
+                          >
+                            {player.user_name}
+                          </Link>
+                        </h4>
+                        <span
+                          className="fw-black italic text-muted"
+                          style={{ fontSize: "1.2rem" }}
+                        >
+                          #{player.jersey_number || "00"}
+                        </span>
+                      </div>
+                      <div className="d-flex gap-2">
+                        <span
+                          className="sporty-badge text-white"
+                          style={{
                             backgroundColor: getPositionColor(player.position),
                           }}
                         >
                           {player.position?.toUpperCase()}
                         </span>
-                        <span
-                          className="badge bg-dark"
-                          style={{ fontSize: "0.7rem", opacity: 0.8 }}
-                        >
+                        <span className="sporty-badge bg-dark text-white">
                           {player.age_category}
                         </span>
                       </div>

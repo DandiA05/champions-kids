@@ -24,7 +24,7 @@ export async function PUT(
     interface UserUpdates {
       name?: string;
       email?: string;
-      role?: "admin" | "non-admin" | "player";
+      role?: "admin" | "non-admin" | "player" | "coach" | "staff";
       is_active?: boolean;
       password_hash?: string;
     }

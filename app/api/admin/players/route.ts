@@ -66,6 +66,8 @@ export async function POST(request: Request) {
       mom,
       is_active,
       is_top_player,
+      raport_url,
+      coach_notes,
     } = body;
 
     // Validation
@@ -95,7 +97,8 @@ export async function POST(request: Request) {
         birthday, photo_url, biography,
         pace, shooting, passing, dribbling, defending, physical,
         appearances, goals, assists, yellow_cards, red_cards, mom,
-        is_active, is_top_player
+        is_active, is_top_player,
+        raport_url, coach_notes
       )
       VALUES (
         ${user_id}, ${position}, ${jersey_number || 0}, ${age_category || ""}, ${past_teams}, 
@@ -103,7 +106,8 @@ export async function POST(request: Request) {
         ${pace || 0}, ${shooting || 0}, ${passing || 0}, ${dribbling || 0}, ${defending || 0}, ${physical || 0},
         ${appearances || 0}, ${goals || 0}, ${assists || 0}, ${yellow_cards || 0}, ${red_cards || 0}, ${mom || 0},
         ${is_active !== undefined ? is_active : true},
-        ${is_top_player !== undefined ? is_top_player : false}
+        ${is_top_player !== undefined ? is_top_player : false},
+        ${raport_url || ""}, ${coach_notes || ""}
       )
       RETURNING *
     `;

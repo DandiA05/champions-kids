@@ -17,9 +17,9 @@ CREATE INDEX IF NOT EXISTS idx_events_event_date ON events(event_date);
 INSERT INTO events (title, banner_url, description, event_date, documentation_urls)
 VALUES 
   (
-    'Champions Kids Tournament 2024', 
+    'campions Kids Tournament 2024', 
     'https://res.cloudinary.com/demo/image/upload/v1631234567/sample.jpg', 
-    'Turnamen akbar tahunan Champions Kids untuk semua kategori umur. Mari tunjukkan bakat dan sportivitas!', 
+    'Turnamen akbar tahunan campions Kids untuk semua kategori umur. Mari tunjukkan bakat dan sportivitas!', 
     '2024-06-15', 
     '["https://res.cloudinary.com/demo/image/upload/v1631234568/sample.jpg", "https://res.cloudinary.com/demo/image/upload/v1631234569/sample.jpg"]'
   ),

@@ -49,15 +49,16 @@ export default async function MatchSchedule() {
             <div
               className="owl-carousel arrow-top-right match-schedule-slider"
               data-nav-dots="false"
-              data-nav-arrow="true"
-              data-items="3"
-              data-xl-items="2"
-              data-lg-items="2"
-              data-md-items="2"
-              data-sm-items="2"
+              data-nav-arrow={matches.length > 1 ? "true" : "false"}
+              data-items={matches.length < 3 ? matches.length : 3}
+              data-xl-items={matches.length < 2 ? matches.length : 2}
+              data-lg-items={matches.length < 2 ? matches.length : 2}
+              data-md-items={matches.length < 2 ? matches.length : 2}
+              data-sm-items={matches.length < 2 ? matches.length : 2}
               data-xs-items="1"
               data-xx-items="1"
               data-autoheight="true"
+              data-loop={matches.length > 1 ? "true" : "false"}
             >
               {matches.map((match) => (
                 <div className="item" key={match.id}>

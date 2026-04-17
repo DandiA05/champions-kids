@@ -32,6 +32,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 interface User {
   id: number;
@@ -63,8 +65,9 @@ export default function UserManagement() {
     name: "",
     email: "",
     password: "",
-    role: "non-admin" as "admin" | "non-admin" | "player",
+    role: "non-admin" as "admin" | "non-admin" | "player" | "coach" | "staff",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
 
   useEffect(() => {
@@ -105,7 +108,7 @@ export default function UserManagement() {
         name: user.name,
         email: user.email,
         password: "", // Password is optional when editing
-        role: user.role as "admin" | "non-admin" | "player",
+        role: user.role as "admin" | "non-admin" | "player" | "coach" | "staff",
       });
     } else {
       setIsEditing(false);
@@ -480,7 +483,7 @@ export default function UserManagement() {
           sx: { borderRadius: "24px", p: 1 },
         }}
       >
-        <DialogTitle sx={{ pb: 1 }}>
+        <DialogTitle sx={{ pb: 1 }} component="div">
           <Typography variant="h5" fontWeight="800">
             {isEditing ? "Edit User" : "Add New User"}
           </Typography>
@@ -528,7 +531,7 @@ export default function UserManagement() {
 
               <TextField
                 label="Password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 fullWidth
                 required={!isEditing}
                 helperText={
@@ -542,6 +545,18 @@ export default function UserManagement() {
                 }
                 disabled={formLoading}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
 
               <FormControl
@@ -555,7 +570,7 @@ export default function UserManagement() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      role: e.target.value as "admin" | "non-admin" | "player",
+                      role: e.target.value as "admin" | "non-admin" | "player" | "coach" | "staff",
                     })
                   }
                   disabled={formLoading}
@@ -563,6 +578,8 @@ export default function UserManagement() {
                   <MenuItem value="non-admin">Non-Admin</MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="player">Player</MenuItem>
+                  <MenuItem value="coach">Coach</MenuItem>
+                  <MenuItem value="staff">Staff</MenuItem>
                 </Select>
               </FormControl>
             </div>

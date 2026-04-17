@@ -12,7 +12,7 @@ CREATE INDEX IF NOT EXISTS idx_clubs_name ON clubs(name);
 
 -- Insert sample club data
 INSERT INTO clubs (name, logo_url) VALUES
-  ('Champions Kids FC', NULL),
+  ('campions Kids FC', NULL),
   ('Lions Academy', NULL),
   ('Eagles Youth Club', NULL),
   ('Dragons Football School', NULL)

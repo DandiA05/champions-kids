@@ -7,18 +7,36 @@ import PlayerRadarChart from "@/components/player-single/player-radar-chart";
 import { POSITIONS } from "@/lib/constants";
 import { getPositionColor } from "@/lib/player-helpers";
 
+import { verifyUserFromCookies } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import PlayerRaportPreview from "@/components/player-single/player-raport-preview";
+
 export default async function PlayerPage(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
   const id = params.id;
 
+  // Authentication Guard
+  const session = await verifyUserFromCookies();
+  if (!session) {
+    redirect("/login");
+  }
+
+  // Authorization Guard: Only allow user to see their own profile (unless admin)
+  // We allow access if the ID in URL matches the session User ID
+  // OR if the player record's user_id matches the session User ID (checked after fetch)
+  if (session.role !== "admin" && session.userId.toString() !== id) {
+    // We'll check the player record's user_id after fetching to be sure
+    // But if the ID doesn't match either, we might redirect early or wait for fetch.
+  }
+
   // Fetch player details join with users
   const result = await sql`
     SELECT p.*, u.name as user_name
     FROM players p
     JOIN users u ON p.user_id = u.id
-    WHERE p.id = ${id}
+    WHERE p.id::text = ${id} OR p.user_id::text = ${id}
     LIMIT 1
   `;
 
@@ -27,6 +45,11 @@ export default async function PlayerPage(props: {
   }
 
   const player = result[0];
+
+  // Secondary Authorization Guard: Check if the fetched player belongs to the logged-in user
+  if (session.role !== "admin" && player.user_id !== session.userId) {
+    redirect("/"); // Or a custom forbidden page
+  }
 
   // Calculate OVR for possibly later use or just to have it
   const ovr = Math.round(
@@ -59,7 +82,7 @@ export default async function PlayerPage(props: {
       {/* Player Detail */}
       <section className="space-ptb single-player">
         <div className="container">
-          <div className="row mb-4">
+          {/* <div className="row mb-4">
             <div className="col-12 text-start">
               <Link
                 href="/team"
@@ -74,7 +97,7 @@ export default async function PlayerPage(props: {
                 Back to Team
               </Link>
             </div>
-          </div>
+          </div> */}
           <div className="row align-items-center">
             <div className="col-lg-5">
               <div className="player-img">
@@ -331,6 +354,100 @@ export default async function PlayerPage(props: {
           </div>
         </div>
       </section>
+
+      {/* Coach Evaluation & Raport */}
+      {(player.coach_notes || player.raport_url) && (
+        <section className="coach-evaluation space-pb mt-5">
+          <div className="container">
+            <div className="row mb-5">
+              <div className="col-lg-12 text-center">
+                <h2 className="text-white">Coach's Evaluation</h2>
+                <p className="text-white mb-0 opacity-75">
+                  Professional Feedback & Performance Raport
+                </p>
+              </div>
+            </div>
+
+            <div className="row g-4">
+              {/* Coach's Notes */}
+              {player.coach_notes && (
+                <div className={player.raport_url ? "col-lg-8" : "col-lg-12"}>
+                  <div
+                    className="p-4 p-md-5 h-100"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.03)",
+                      borderRadius: "24px",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      backdropFilter: "blur(10px)",
+                    }}
+                  >
+                    <div className="d-flex align-items-center gap-3 mb-4">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          backgroundColor: "rgba(255,193,7,0.1)",
+                          color: "#F5A623",
+                        }}
+                      >
+                        <i className="fas fa-comment fa-lg"></i>
+                      </div>
+                      <h4 className="text-white mb-0">Coach Notes</h4>
+                    </div>
+                    <div
+                      className="text-white opacity-75"
+                      style={{
+                        fontSize: "1.1rem",
+                        lineHeight: "1.8",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      "{player.coach_notes}"
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Raport Download */}
+              {player.raport_url && (
+                <div className={player.coach_notes ? "col-lg-4" : "col-lg-12"}>
+                  <div
+                    className="p-4 p-md-5 h-100 d-flex flex-column align-items-center justify-content-center text-center"
+                    style={{
+                      backgroundColor: "rgba(255,193,7,0.05)",
+                      borderRadius: "24px",
+                      border: "1px solid rgba(255,193,7,0.2)",
+                      backdropFilter: "blur(10px)",
+                    }}
+                  >
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center mb-4"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        backgroundColor: "rgba(255,193,7,0.1)",
+                        color: "#F5A623",
+                      }}
+                    >
+                      <i className="fas fa-file-pdf fa-3x"></i>
+                    </div>
+                    <h4 className="text-white mb-2">Performance Raport</h4>
+                    <p className="text-white opacity-50 mb-4 small">
+                      Detailed statistical analysis and technical evaluation
+                      PDF.
+                    </p>
+                    <PlayerRaportPreview
+                      raportUrl={player.raport_url}
+                      playerName={player.user_name}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* About Player */}
       {player.biography && (

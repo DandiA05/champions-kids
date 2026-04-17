@@ -42,6 +42,7 @@ import {
   CloudinaryUploadWidgetResults,
 } from "next-cloudinary";
 import { AGE_CATEGORIES, POSITIONS } from "@/lib/constants";
+import Link from "next/link";
 
 interface Player {
   id: number;
@@ -72,6 +73,8 @@ interface Player {
   is_top_player: boolean;
   jersey_number: number;
   age_category: string;
+  raport_url: string;
+  coach_notes: string;
 }
 
 interface User {
@@ -126,6 +129,8 @@ const initialPlayerState = {
   mom: 0,
   is_active: true,
   is_top_player: false,
+  raport_url: "",
+  coach_notes: "",
 };
 
 export default function PlayerManagementPage() {
@@ -171,7 +176,7 @@ export default function PlayerManagementPage() {
       const usersRes = await fetch("/api/admin/users");
       const usersData = await usersRes.json();
 
-      if (playersRes.ok && usersRes.ok) {
+      if (playersRes.ok || usersRes.ok) {
         setPlayers(playersData.players);
         // Filter users who have role 'player'
         const playerRoleUsers = usersData.users.filter(
@@ -839,7 +844,7 @@ export default function PlayerManagementPage() {
                       </TableCell>
                       <TableCell>
                         {player.is_top_player ? (
-                          <StarIcon sx={{ color: "#ffc107" }} />
+                          <StarIcon sx={{ color: "#F5A623" }} />
                         ) : (
                           <StarBorderIcon sx={{ color: "rgba(0,0,0,0.1)" }} />
                         )}
@@ -958,7 +963,7 @@ export default function PlayerManagementPage() {
           sx: { borderRadius: "24px", p: 1 },
         }}
       >
-        <DialogTitle sx={{ pb: 1 }}>
+        <DialogTitle sx={{ pb: 1 }} component="div">
           <Typography variant="h5" fontWeight="800">
             {isEditing ? "Edit Player Profile" : "Register New Player"}
           </Typography>
@@ -987,6 +992,7 @@ export default function PlayerManagementPage() {
             <Tab label="Profile" />
             <Tab label="Attributes" />
             <Tab label="Statistics" />
+            <Tab label="Raport & Notes" />
           </Tabs>
         </Box>
 
@@ -1154,22 +1160,6 @@ export default function PlayerManagementPage() {
                   ))}
                 </TextField>
               </div>
-              <div className="col-span-12 sm:col-span-6">
-                <TextField
-                  label="Birthday"
-                  type="date"
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                  value={selectedPlayer.birthday}
-                  onChange={(e) =>
-                    setSelectedPlayer({
-                      ...selectedPlayer,
-                      birthday: e.target.value,
-                    })
-                  }
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
-                />
-              </div>
 
               <div className="col-span-12 sm:col-span-6">
                 <TextField
@@ -1312,6 +1302,122 @@ export default function PlayerManagementPage() {
                   />
                 </div>
               ))}
+            </div>
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={3}>
+            <div className="flex flex-col gap-6">
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  fontWeight="700"
+                  gutterBottom
+                  sx={{ mb: 1 }}
+                >
+                  Player Raport (PDF)
+                </Typography>
+                <Box
+                  sx={{
+                    p: 3,
+                    border: "2px dashed rgba(0,0,0,0.1)",
+                    borderRadius: "16px",
+                    bgcolor: "rgba(0,0,0,0.02)",
+                    textAlign: "center",
+                  }}
+                >
+                  {selectedPlayer.raport_url ? (
+                    <Box sx={{ mb: 2 }}>
+                      <Typography
+                        variant="body2"
+                        color="success.main"
+                        fontWeight="700"
+                      >
+                        ✓ Raport Uploaded
+                      </Typography>
+                      <a
+                        href={selectedPlayer.raport_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "#1976d2",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        View current PDF
+                      </a>
+                    </Box>
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={{ mb: 2 }}
+                    >
+                      No raport uploaded yet.
+                    </Typography>
+                  )}
+
+                  <CldUploadWidget
+                    uploadPreset={
+                      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ||
+                      "champions_kids"
+                    }
+                    onSuccess={(results: CloudinaryUploadWidgetResults) => {
+                      if (results.info && typeof results.info !== "string") {
+                        setSelectedPlayer({
+                          ...selectedPlayer,
+                          raport_url: results.info.secure_url,
+                        });
+                      }
+                    }}
+                    options={{
+                      maxFiles: 1,
+                      resourceType: "auto",
+                      clientAllowedFormats: ["pdf"],
+                    }}
+                  >
+                    {({ open }) => (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => open()}
+                        sx={{ borderRadius: "8px", textTransform: "none" }}
+                      >
+                        {selectedPlayer.raport_url
+                          ? "Replace PDF"
+                          : "Upload Raport"}
+                      </Button>
+                    )}
+                  </CldUploadWidget>
+                </Box>
+              </Box>
+
+              <Box sx={{ mt: 3 }}>
+                <Typography
+                  variant="subtitle2"
+                  fontWeight="700"
+                  gutterBottom
+                  sx={{ mb: 1 }}
+                >
+                  Coach's Notes
+                </Typography>
+                <TextField
+                  multiline
+                  rows={6}
+                  fullWidth
+                  placeholder="Enter evaluation, strengths, weaknesses, or specific advice for this player..."
+                  value={selectedPlayer.coach_notes}
+                  onChange={(e) =>
+                    setSelectedPlayer({
+                      ...selectedPlayer,
+                      coach_notes: e.target.value,
+                    })
+                  }
+                  sx={{
+                    "& .MuiOutlinedInput-root": { borderRadius: "16px" },
+                  }}
+                />
+              </Box>
             </div>
           </TabPanel>
         </DialogContent>

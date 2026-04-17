@@ -4,6 +4,8 @@ import TopPlayers from "@/components/top-players";
 import LatestResults from "@/components/latest-results";
 import MatchSchedule from "@/components/match-schedule";
 import MatchCountdown from "@/components/match-countdown";
+import Link from "next/link";
+import AboutUs from "@/components/about-us";
 
 export default function Home() {
   return (
@@ -59,7 +61,7 @@ export default function Home() {
                       data-duration="1.5s"
                       data-delay="1.0s"
                     >
-                      Football Is Just Awesome
+                      Champion Kids Football Club
                     </h1>
                     <p
                       className="text-white"
@@ -175,7 +177,7 @@ export default function Home() {
                       data-duration="1.5s"
                       data-delay="1.0s"
                     >
-                      Football for the kicks
+                      Champion Kids Football Club
                     </h1>
                     <p
                       className="text-white"
@@ -184,7 +186,7 @@ export default function Home() {
                       data-delay="2.0s"
                     >
                       Bentuk karakter, disiplin, dan kerja sama tim melalui
-                      olahraga. Bergabunglah bersama Champions Kids dan rasakan
+                      olahraga. Bergabunglah bersama campion Kids dan rasakan
                       pengalaman latihan sepak bola yang seru dan mengedukasi.
                     </p>
                     {/* <a
@@ -230,98 +232,7 @@ export default function Home() {
 
       <MatchCountdown />
 
-      <section className="space-ptb about">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-12 col-lg-6 mb-4 mb-lg-0">
-              <div className="about-img fadeInUp animated">
-                <img
-                  className="img-fluid"
-                  src="/images/home-01/about.jpg"
-                  alt=""
-                />
-              </div>
-            </div>
-            <div className="col-12 col-lg-6">
-              <div className="section-title mb-4 mb-lg-5">
-                <h2 className="mb-4">About The Football</h2>
-                <p className="text-white">
-                  Positive pleasure-oriented goals are much more powerful
-                  motivators than negative fear-based ones. Although each is
-                  successful separately, the right combination of both is the
-                  most powerful motivational force known to humankind.
-                </p>
-                <p className="text-white">
-                  Give yourself the power of responsibility. Remind yourself the
-                  only thing stopping you is yourself.
-                </p>
-              </div>
-              <div className="row counter-box">
-                <div className="col-sm-4">
-                  <div className="counter mb-4 mb-lg-0">
-                    <div className="counter-number">
-                      <p>Games</p>
-                      <div className="counter-text">
-                        <h2
-                          className="timer mb-0"
-                          data-to="200"
-                          data-speed="2000"
-                        >
-                          200
-                        </h2>
-                        <span>+</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-sm-4">
-                  <div className="counter mb-4 mb-lg-0">
-                    <div className="counter-number">
-                      <p>Goals</p>
-                      <div className="counter-text">
-                        <h2
-                          className="timer mb-0"
-                          data-to="179"
-                          data-speed="2000"
-                        >
-                          179
-                        </h2>
-                        <span>+</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="col-sm-4">
-                  <div className="counter mb-4 mb-md-0">
-                    <div className="counter-number">
-                      <p>Assist</p>
-                      <div className="counter-text">
-                        <h2
-                          className="timer mb-0"
-                          data-to="146"
-                          data-speed="2000"
-                        >
-                          146
-                        </h2>
-                        <span>+</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="about-bg">
-          <img
-            className="img-fluid vert-move"
-            src="/images/home-01/pattern-04.png"
-            alt=""
-          />
-        </div>
-      </section>
+      <AboutUs />
 
       <LatestResults />
 
@@ -332,64 +243,6 @@ export default function Home() {
 
       {/* LATEST EVENTS */}
       <LatestEvents />
-
-      {/* <div className="client-logo py-5 bg-primary-psg">
-        <div className="container">
-          <div className="row align-items-center">
-            <div className="col-md-12">
-              <div
-                className="owl-carousel"
-                data-nav-dots="false"
-                data-nav-arrow="false"
-                data-items="5"
-                data-lg-items="5"
-                data-md-items="3"
-                data-sm-items="3"
-                data-xs-items="2"
-                data-xx-items="1"
-                data-space="0"
-                data-autoheight="true"
-              >
-                <div className="item">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/client-logo/01.png"
-                    alt=""
-                  />
-                </div>
-                <div className="item">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/client-logo/02.png"
-                    alt=""
-                  />
-                </div>
-                <div className="item">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/client-logo/03.png"
-                    alt=""
-                  />
-                </div>
-                <div className="item">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/client-logo/04.png"
-                    alt=""
-                  />
-                </div>
-                <div className="item">
-                  <img
-                    className="img-fluid"
-                    src="/images/home-01/client-logo/05.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       <LogoSlide />
     </main>
